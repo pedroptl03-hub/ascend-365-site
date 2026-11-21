@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b0d16"><title>LEVEL UP — Sua evolução</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap');
+:root{--bg:#0b0d16;--panel:#131725;--panel2:#191f30;--line:#293149;--text:#f4f6ff;--muted:#9aa4bc;--violet:#a78bfa;--cyan:#75e0d0;--gold:#ffd27a;--red:#ff8e9c;--shadow:0 18px 50px #0004}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 10% -10%,#302454 0,transparent 36%),radial-gradient(ellipse at 100% 10%,#12383a 0,transparent 30%),var(--bg);color:var(--text);font:14px 'DM Sans',sans-serif;min-height:100vh}button,input,select{font:inherit}button{cursor:pointer}
+.app{max-width:1260px;margin:auto;padding:26px 22px 60px}.top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:25px}.brand{display:flex;align-items:center;gap:12px}.logo{width:46px;height:46px;border-radius:15px;background:linear-gradient(135deg,#c0a4ff,#6d8cff);display:grid;place-items:center;color:#171326;font-size:23px;font-weight:900;box-shadow:0 8px 30px #9272f755}.brand b{font:700 19px 'Space Grotesk';letter-spacing:.7px}.brand small{display:block;color:var(--muted);font-size:11px;margin-top:2px}.top-right{display:flex;gap:9px;align-items:center}.chip{border:1px solid var(--line);background:#151a29;border-radius:30px;padding:9px 13px;color:var(--muted);font-size:12px}.chip strong{color:var(--gold)}
+.nav{display:flex;gap:7px;overflow:auto;padding:5px;background:#101421;border:1px solid var(--line);border-radius:15px;margin-bottom:20px}.nav button{border:0;background:transparent;color:var(--muted);padding:11px 16px;border-radius:10px;white-space:nowrap;font-weight:700}.nav button.active{background:#292344;color:#e4d9ff;box-shadow:inset 0 0 0 1px #544478}
+.page{display:none}.page.active{display:block}.hero{display:grid;grid-template-columns:1.45fr .75fr;gap:16px;margin-bottom:16px}.card{background:linear-gradient(145deg,#171d2c,#121725);border:1px solid var(--line);border-radius:21px;padding:21px;box-shadow:var(--shadow)}.hero-main{padding:27px;background:linear-gradient(120deg,#272344,#172b35);position:relative;overflow:hidden}.hero-main:after{content:"✦";position:absolute;right:35px;top:5px;font-size:130px;color:#ffffff09}.eyebrow{text-transform:uppercase;letter-spacing:1.6px;font-size:10px;color:var(--violet);font-weight:800}.hero h1{font:700 clamp(27px,4vw,40px)/1.08 'Space Grotesk';margin:10px 0}.hero p{color:#b8bfd1;max-width:580px;margin:0;line-height:1.65}.level-card{display:flex;flex-direction:column;justify-content:space-between}.level-top{display:flex;justify-content:space-between;align-items:center}.level-number{font:700 43px 'Space Grotesk';color:var(--gold)}.level-title{font-weight:800;font-size:16px}.muted{color:var(--muted)}.small{font-size:11px}.bar{height:8px;border-radius:10px;background:#2a3043;overflow:hidden;margin:12px 0 7px}.bar>i{height:100%;display:block;width:0;background:linear-gradient(90deg,var(--violet),var(--cyan));border-radius:10px;transition:width .3s}.bar-meta{display:flex;justify-content:space-between;color:var(--muted);font-size:11px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-bottom:16px}.stat{padding:17px}.stat .ico{font-size:20px}.stat strong{display:block;font:700 25px 'Space Grotesk';margin:8px 0 1px}.stat span{font-size:11px;color:var(--muted)}
+.columns{display:grid;grid-template-columns:1.15fr .85fr;gap:16px}.head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:15px}.head h2,.head h3{font:700 17px 'Space Grotesk';margin:0}.task,.shop-item,.achievement,.history-row{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid #252d40}.task:last-child,.shop-item:last-child,.achievement:last-child,.history-row:last-child{border:0}.iconbox{width:42px;height:42px;display:grid;place-items:center;border-radius:14px;background:#282442;font-size:20px;flex-shrink:0}.grow{flex:1;min-width:0}.grow strong{display:block;font-weight:750}.grow small{display:block;color:var(--muted);font-size:11px;margin-top:3px}.reward-tag{font-size:11px;color:var(--cyan);font-weight:800;white-space:nowrap}.btn{border:0;border-radius:11px;padding:10px 13px;background:linear-gradient(135deg,#bda3ff,#8c8cff);color:#171326;font-weight:800}.btn:hover{filter:brightness(1.08);transform:translateY(-1px)}.btn:disabled{opacity:.35;cursor:not-allowed;transform:none}.btn.secondary{background:#252c40;border:1px solid #39425c;color:var(--text)}.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--muted)}.btn.danger{background:#482b3a;color:#ffc5d0}.row-actions{display:flex;gap:7px;flex-wrap:wrap}.empty{color:var(--muted);font-size:12px;padding:15px 0}
+/* Refinamento visual e organização das missões */
+.task{padding:15px 12px;margin:7px 0;border:1px solid transparent;border-radius:15px;background:linear-gradient(110deg,#1a2031aa,#151b29aa);transition:.2s}.task:hover{border-color:#66558e;background:linear-gradient(110deg,#25213b,#192333);transform:translateY(-1px)}.task .iconbox{background:linear-gradient(145deg,#332b55,#202b42);box-shadow:inset 0 0 0 1px #ffffff0b}.reward-tag{background:#183a3b;padding:7px 10px;border-radius:9px;color:#8ef0df}.task-tools{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.sort-select{width:auto;min-width:185px;padding:9px 34px 9px 12px;border-radius:11px;background-color:#111827;border-color:#3a3e59;color:var(--text);font-weight:700;font-size:12px}.sort-label{font-size:11px;color:var(--muted)}.mission-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:2px 0 12px;padding:12px;background:#101624;border:1px solid var(--line);border-radius:14px}.mission-toolbar .sort-group{display:flex;align-items:center;gap:9px}.mission-count-note{font-size:11px;color:var(--muted)}.task .btn{white-space:nowrap}.task .btn.ghost{padding:9px 11px}.card{backdrop-filter:blur(10px)}.stat{transition:transform .2s,border-color .2s}.stat:hover{transform:translateY(-3px);border-color:#65568a}.section-title{letter-spacing:-.5px}.nav button{transition:.2s}.nav button:hover{background:#201e35;color:#eee7ff}
+.formgrid{display:grid;grid-template-columns:1.4fr .7fr .8fr .7fr auto;gap:8px;margin-top:13px}.field{width:100%;background:#0d1220;color:var(--text);border:1px solid #303951;border-radius:10px;padding:11px;outline:none;min-width:0}.field:focus{border-color:var(--violet)}.fieldlabel{font-size:10px;color:var(--muted);display:block;margin:0 0 5px 2px}
+.section-title{font:700 23px 'Space Grotesk';margin:0 0 5px}.section-desc{color:var(--muted);margin:0 0 18px;font-size:12px}.two{display:grid;grid-template-columns:1fr 1fr;gap:15px}.challenge{background:linear-gradient(130deg,#1b2830,#171b2b);border:1px solid #2b4a4c;border-radius:16px;padding:16px;margin-bottom:10px}.challenge strong{font-size:14px}.challenge p{color:var(--muted);font-size:11px;margin:5px 0 12px}.shop-price{color:var(--gold);font-weight:800;white-space:nowrap}.shop-preview-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}.shop-preview{background:#111827;border:1px solid var(--line);border-radius:14px;padding:13px;display:flex;align-items:center;gap:10px}.shop-preview .grow small{line-height:1.5}.cart-line{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--line)}.cart-total{display:flex;justify-content:space-between;align-items:center;padding-top:14px;margin-top:8px;font-weight:800}.cart-count{background:#33284f;color:#e8dcff;border-radius:20px;padding:2px 7px;font-size:10px;margin-left:4px}.badge-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.badge{padding:17px;border:1px solid var(--line);background:#151b2a;border-radius:16px;text-align:center}.badge .medal{font-size:30px;filter:grayscale(1);opacity:.35}.badge.unlocked{border-color:#665b8b;background:linear-gradient(145deg,#282342,#171d2b)}.badge.unlocked .medal{filter:none;opacity:1}.badge strong{display:block;margin:7px 0 3px}.badge small{color:var(--muted);font-size:10px}
+.chart{height:170px;display:flex;align-items:end;gap:10px;padding:15px 5px 0;border-bottom:1px solid var(--line)}.daybar{flex:1;display:flex;flex-direction:column;justify-content:end;align-items:center;height:100%;gap:7px}.daybar i{width:100%;max-width:38px;min-height:3px;background:linear-gradient(180deg,var(--cyan),#8274d8);border-radius:7px 7px 2px 2px}.daybar small{color:var(--muted);font-size:10px}
+.focus-box{text-align:center;padding:32px 15px}.focus-time{font:700 clamp(48px,9vw,76px) 'Space Grotesk';letter-spacing:-3px;margin:12px 0;color:var(--cyan)}.focus-controls{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}.timer-note{color:var(--muted);font-size:11px;margin-top:13px}
+.modal-back{position:fixed;inset:0;background:#050711bb;display:none;align-items:center;justify-content:center;padding:18px;z-index:5}.modal-back.show{display:flex}.modal{width:min(440px,100%);background:#171d2c;border:1px solid var(--line);border-radius:20px;padding:22px;box-shadow:var(--shadow)}.modal h3{margin:0 0 14px;font:700 19px 'Space Grotesk'}.modal .formline{margin:10px 0}.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:17px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:#e3fff6;color:#10241f;padding:12px 18px;border-radius:12px;font-weight:800;box-shadow:var(--shadow);transition:.25s;z-index:10}.toast.show{opacity:1;transform:translate(-50%,0)}
+footer{text-align:center;color:#67718a;font-size:10px;margin-top:27px}
+@media(max-width:850px){.hero,.columns,.two{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}.formgrid{grid-template-columns:1fr 1fr}.formgrid>div:first-child{grid-column:1/-1}.formgrid button{grid-column:1/-1}.badge-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:480px){.sort-select{min-width:0;width:100%}.mission-toolbar .sort-group{width:100%;align-items:stretch;flex-direction:column}.task{flex-wrap:wrap}.task .grow{min-width:calc(100% - 58px)}.task .reward-tag{margin-left:54px}.task .row-actions{margin-left:auto}.app{padding:17px 12px 40px}.top{align-items:flex-start}.top-right .chip:first-child{display:none}.card{padding:16px}.hero-main{padding:22px}.badge-grid{grid-template-columns:1fr 1fr}.task{gap:9px}.task .btn{padding:9px}.nav button{padding:10px 12px}}
+
+/* ===== NOVA IDENTIDADE VISUAL: GRAFITE + LAVANDA ===== */
+:root{
+ --bg:#27282e;--panel:#32333b;--panel2:#3a3b44;--line:#4a4b55;
+ --text:#f3f1f6;--muted:#b5b2bf;--violet:#c2a9ef;--cyan:#b9c9c5;
+ --gold:#e7c58a;--red:#e6a0aa;--shadow:0 14px 36px #11131955;
+}
+body{
+ background:radial-gradient(ellipse at 12% 0%,#51465f 0,transparent 34%),
+ radial-gradient(ellipse at 92% 12%,#454b50 0,transparent 31%),#27282e;
+ color:var(--text);font-family:'DM Sans',sans-serif;
+}
+.app{max-width:1320px;padding:30px 26px 64px}
+.top{margin-bottom:22px}
+.logo{background:linear-gradient(145deg,#d4c1f2,#a78bcf);color:#292331;box-shadow:0 7px 22px #b99cdd30;border-radius:14px}
+.brand b{letter-spacing:1.1px;font-size:20px}
+.brand small{color:#c0bdc8}
+.chip{background:#383941;border-color:#55545e;color:#d0ccd6}
+.chip strong{color:#f0d5a4}
+.nav{background:#303139;border:1px solid #4b4b55;border-radius:16px;padding:6px;box-shadow:0 8px 24px #15161b30}
+.nav button{color:#c2bfca;padding:12px 17px;border-radius:11px}
+.nav button.active{background:linear-gradient(135deg,#594c68,#484052);color:#fff;box-shadow:inset 0 0 0 1px #8c78a5}
+.nav button:hover{background:#44414b;color:#fff}
+.card{background:linear-gradient(145deg,#393a43,#303139);border:1px solid #4d4d57;border-radius:19px;box-shadow:var(--shadow);backdrop-filter:blur(8px)}
+.hero{gap:18px;margin-bottom:18px}
+.hero-main{background:linear-gradient(115deg,#51465e 0%,#41404b 56%,#3b4546 100%);border-color:#70617d;padding:30px}
+.hero-main:after{content:'✧';right:34px;top:-13px;color:#ffffff12;font-size:150px}
+.eyebrow{color:#e0c9fa;letter-spacing:1.45px}
+.hero h1{letter-spacing:-1.5px}
+.hero p{color:#e0dce6}
+.level-number{color:#efd3a0}
+.bar{background:#4b4a55}
+.bar>i{background:linear-gradient(90deg,#c5a9eb,#e4c994)}
+.stats{gap:14px;margin-bottom:18px}
+.stat{background:linear-gradient(145deg,#3b3c45,#33343c);padding:18px;border-radius:17px}
+.stat strong{color:#f4f0f6}
+.stat span{color:#c0bdc8}
+.stat:hover{border-color:#8c79a3;transform:translateY(-2px)}
+.columns{gap:18px}
+.head h2,.head h3{letter-spacing:-.35px}
+.task{background:linear-gradient(110deg,#41414a,#383941);border-color:#4b4b55;border-radius:13px}
+.task:hover{border-color:#a18ab8;background:linear-gradient(110deg,#4b4353,#3c4146)}
+.task .iconbox{background:linear-gradient(145deg,#554966,#454550);box-shadow:none}
+.reward-tag{background:#454a48;color:#d5e4dc;border:1px solid #59645e}
+.btn{background:linear-gradient(135deg,#d0b9ef,#b49bd8);color:#2c2634;border-radius:10px;box-shadow:0 4px 12px #16131d20}
+.btn.secondary{background:#4a4b55;border:1px solid #62616b;color:#f2eff5;box-shadow:none}
+.btn.ghost{background:#3b3c45;border:1px solid #62616b;color:#e0dce6;box-shadow:none}
+.btn.danger{background:#60434b;color:#ffe0e4}
+.btn:hover{filter:brightness(1.06);transform:translateY(-1px)}
+.formgrid{gap:10px}
+.field{background:#292a31;color:var(--text);border:1px solid #55545f;border-radius:10px}
+.field:focus{border-color:#c2a9ef;box-shadow:0 0 0 3px #c2a9ef20}
+.sort-select{background-color:#303139;border-color:#5b5965;color:var(--text)}
+.mission-toolbar{background:#303139;border-color:#4b4b55;border-radius:14px}
+.challenge{background:linear-gradient(130deg,#3e4947,#3b3a44);border-color:#68766f;border-radius:15px}
+.challenge p{color:#d0ccd6}
+.shop-preview{background:#383941;border-color:#51515b;border-radius:14px}
+.cart-count{background:#625270;color:#f3e9ff}
+.badge{background:#383941;border-color:#50505a}
+.badge.unlocked{border-color:#9a83b0;background:linear-gradient(145deg,#51465e,#3b3b45)}
+.chart{border-color:#55545f}
+.daybar i{background:linear-gradient(180deg,#e6c994,#b79bdc)}
+.focus-time{color:#e4c994}
+.modal{background:#383941;border-color:#5a5963}
+.modal-back{background:#17181dcc}
+.toast{background:#e7e1ed;color:#302b36}
+footer{color:#a09ca9}
+@media(max-width:850px){.app{padding:20px 15px 45px}.hero{grid-template-columns:1fr}.columns{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.top{align-items:flex-start;flex-direction:column}.top-right{width:100%}.top-right .chip{flex:1;text-align:center}.nav{border-radius:13px}.nav button{padding:10px 12px}.card{padding:16px}.hero-main{padding:23px}.formgrid{grid-template-columns:1fr 1fr}.badge-grid{grid-template-columns:repeat(2,1fr)}}
+
+
+/* ===== PORTA DE ENTRADA — PORTAL LEVEL UP ===== */
+body.landing-open{overflow:hidden}
+.landing{position:fixed;inset:0;z-index:1000;display:grid;place-items:center;padding:24px;overflow:hidden;background:radial-gradient(circle at 50% 43%,#6a5b73 0%,#45434b 30%,#2d2e34 68%,#24252b 100%);transition:opacity .8s ease,visibility .8s ease}
+.landing.hidden{opacity:0;visibility:hidden;pointer-events:none}
+.landing::before{content:"";position:absolute;width:760px;height:760px;border:1px solid #e7d4f025;border-radius:50%;box-shadow:0 0 90px #d7baf51a;animation:portalPulse 5s ease-in-out infinite}
+.landing::after{content:"";position:absolute;width:520px;height:520px;border:1px solid #e7c9941c;border-radius:50%;animation:portalSpin 24s linear infinite}
+.portal-orbit{position:absolute;width:900px;height:900px;border:1px dashed #d9c6e51c;border-radius:50%;animation:portalSpin 38s linear infinite reverse}
+.portal-orbit::before,.portal-orbit::after{content:"✦";position:absolute;color:#e7c99488;font-size:14px;text-shadow:0 0 15px #e7c994;top:8%;left:18%}.portal-orbit::after{top:auto;left:auto;right:13%;bottom:17%;color:#cbb0ef88}
+.landing-content{position:relative;z-index:2;text-align:center;width:min(590px,100%);animation:landingIn 1s cubic-bezier(.2,.8,.2,1)}
+.landing-kicker{display:inline-flex;align-items:center;gap:10px;color:#eadff3;text-transform:uppercase;letter-spacing:4px;font-size:9px;font-weight:800;background:#292a3190;border:1px solid #77707f55;border-radius:30px;padding:8px 13px;box-shadow:0 8px 30px #15151a33}
+.landing-kicker::before,.landing-kicker::after{content:"";width:22px;height:1px;background:linear-gradient(90deg,transparent,#d9c6e5)}
+.landing-kicker::after{background:linear-gradient(90deg,#d9c6e5,transparent)}
+.entry-portal{width:230px;height:270px;margin:27px auto 23px;position:relative;display:grid;place-items:center}
+.entry-portal .glow{position:absolute;width:220px;height:250px;border-radius:50% 50% 12% 12% / 42% 42% 8% 8%;background:radial-gradient(ellipse,#d2b5ef38 0%,#d2b5ef10 42%,transparent 70%);filter:blur(9px);animation:portalGlow 2.8s ease-in-out infinite}
+.entry-door{width:190px;height:250px;position:relative;border:1px solid #e3d0f2aa;border-bottom:0;border-radius:100px 100px 10px 10px;background:linear-gradient(160deg,#cbb4e91c,#4a455522 45%,#e6c99418);box-shadow:0 0 0 8px #d8c5ee0a,0 0 65px #c7a8e844,inset 0 0 45px #d5c0ee22;overflow:hidden;transition:transform .7s ease,filter .7s ease}
+.entry-door::before{content:"";position:absolute;inset:12px 12px 0;border:1px solid #eadcf655;border-bottom:0;border-radius:88px 88px 5px 5px}
+.entry-door::after{content:"✦";position:absolute;top:82px;left:0;right:0;font-size:45px;color:#f0d7a8;text-shadow:0 0 28px #f0d7a8aa;animation:starPulse 2.2s ease-in-out infinite}
+.entry-door .door-light{position:absolute;inset:24px 24px 0;background:radial-gradient(ellipse at center,#f0d7a82b,transparent 62%);opacity:.6}
+.entry-door .door-lines{position:absolute;left:28px;right:28px;bottom:28px;height:58px;border-top:1px solid #eadcf633;border-bottom:1px solid #eadcf622}
+.door-knob{position:absolute;right:25px;bottom:68px;width:8px;height:8px;border-radius:50%;background:#f0d7a8;box-shadow:0 0 12px #f0d7a8}
+.landing h1{font:700 clamp(42px,8vw,68px)/.95 'Space Grotesk',sans-serif;letter-spacing:5px;margin:0;color:#fbf7ff;text-shadow:0 8px 35px #17151d55}
+.landing-sub{color:#d5d0dc;font-size:14px;line-height:1.7;margin:14px auto 22px;max-width:440px}
+.landing-stats{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:0 auto 23px}.landing-stat{min-width:125px;padding:10px 14px;background:#2d2e3599;border:1px solid #68657266;border-radius:13px;color:#bcb7c4;font-size:10px;backdrop-filter:blur(10px)}.landing-stat strong{display:block;color:#eee9f4;font:700 14px 'Space Grotesk';margin-bottom:2px}
+.enter-btn{position:relative;border:1px solid #ead7f4aa;border-radius:14px;padding:15px 30px;background:linear-gradient(135deg,#d8c3ef,#b49bd8);color:#302a37;font-weight:800;letter-spacing:.3px;box-shadow:0 10px 35px #c5a8e844;transition:.25s;overflow:hidden}.enter-btn::before{content:"";position:absolute;inset:0;transform:translateX(-110%);background:linear-gradient(90deg,transparent,#fff8,transparent);transition:.6s}.enter-btn:hover::before{transform:translateX(110%)}.enter-btn:hover{transform:translateY(-3px);box-shadow:0 15px 45px #c5a8e866}
+.landing-foot{display:block;color:#aaa5b2;font-size:9px;letter-spacing:2px;margin-top:18px}
+.landing.leaving .entry-door{transform:scale(1.06);filter:brightness(1.45);box-shadow:0 0 0 100vmax #ffffff00,0 0 100px #e7d4f088,inset 0 0 70px #f0d7a855}
+@keyframes landingIn{from{opacity:0;transform:translateY(18px) scale(.98)}to{opacity:1;transform:none}}@keyframes portalPulse{0%,100%{transform:scale(.96);opacity:.45}50%{transform:scale(1.02);opacity:1}}@keyframes portalGlow{0%,100%{transform:scale(.94);opacity:.45}50%{transform:scale(1.06);opacity:.9}}@keyframes starPulse{0%,100%{transform:scale(.9);opacity:.65}50%{transform:scale(1.15);opacity:1}}@keyframes portalSpin{to{transform:rotate(360deg)}}
+@media(max-width:480px){.entry-portal{width:185px;height:220px;margin:21px auto}.entry-door{width:155px;height:205px}.entry-door::after{top:67px}.landing-sub{font-size:13px}.landing h1{letter-spacing:3px}.landing-stat{min-width:105px}.landing::before{width:570px;height:570px}}
+
+
+/* ===== REFINAMENTO GERAL — EXPERIÊNCIA LEVEL UP ===== */
+html{scroll-behavior:smooth;scroll-padding-top:18px}
+body{background-image:radial-gradient(ellipse at 8% 2%,#62516e55 0,transparent 32%),radial-gradient(ellipse at 95% 18%,#58635c35 0,transparent 30%),linear-gradient(145deg,#292a31,#25262c 62%,#2c2b32)}
+.app{max-width:1380px;padding-top:34px}
+.top{padding:4px 2px 18px;border-bottom:1px solid #ffffff12}
+.logo{position:relative;isolation:isolate;width:50px;height:50px;font-size:24px;border:1px solid #ffffff45;box-shadow:0 8px 24px #b99cdd35,inset 0 1px 0 #ffffff75}
+.logo:after{content:"";position:absolute;inset:-5px;border:1px solid #c9b0e733;border-radius:17px;z-index:-1}
+.brand b{font-size:21px;letter-spacing:1.7px}
+.brand small{letter-spacing:.15px}
+.chip{box-shadow:inset 0 1px 0 #ffffff0c;transition:transform .2s,border-color .2s}
+.chip:hover{transform:translateY(-1px);border-color:#a995bb}
+.nav{position:sticky;top:10px;z-index:20;backdrop-filter:blur(18px);background:#303139eF;box-shadow:0 12px 28px #17171d25;margin-bottom:24px}
+.nav button{position:relative;transition:background .2s,color .2s,transform .2s}
+.nav button.active:after{content:"";position:absolute;left:24%;right:24%;bottom:4px;height:2px;border-radius:3px;background:linear-gradient(90deg,#c6a9ec,#e9d1a0)}
+.page.active{animation:pageReveal .38s ease both}
+@keyframes pageReveal{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+.hero{grid-template-columns:minmax(0,1.55fr) minmax(250px,.72fr);gap:18px}
+.hero-main{min-height:236px;display:flex;flex-direction:column;justify-content:center;border-radius:23px;box-shadow:0 18px 42px #17141e33,inset 0 1px 0 #ffffff20}
+.hero-main:before{content:"LEVEL UP  /  SUA JORNADA";position:absolute;right:25px;bottom:20px;color:#ffffff45;font:700 9px 'Space Grotesk';letter-spacing:2px}
+.hero-main:after{right:38px;top:-15px;font-size:175px;color:#ffffff0d;transform:rotate(-12deg)}
+.hero h1{max-width:610px;font-size:clamp(32px,4vw,48px);letter-spacing:-1.8px}
+.hero p{font-size:13px;max-width:540px}
+.level-card{border-radius:23px;position:relative;overflow:hidden}
+.level-card:after{content:"✧";position:absolute;right:18px;bottom:18px;font-size:78px;color:#e7c58a0b;pointer-events:none}
+.level-number{font-size:53px;line-height:1.05;text-shadow:0 5px 24px #e7c58a22}
+.bar{height:10px;border:1px solid #ffffff0a;box-shadow:inset 0 2px 4px #0002}
+.bar>i{box-shadow:0 0 14px #c4a9eb55}
+.stats{gap:15px}
+.stat{position:relative;overflow:hidden;min-height:124px;border-radius:19px;box-shadow:0 10px 25px #15151b20,inset 0 1px 0 #ffffff0b}
+.stat:after{content:"";position:absolute;width:90px;height:90px;right:-34px;top:-38px;border-radius:50%;background:#d5c1ed0b}
+.stat .ico{display:grid;place-items:center;width:37px;height:37px;border-radius:12px;background:#ffffff0b;border:1px solid #ffffff0d}
+.stat strong{font-size:29px;letter-spacing:-.7px}
+.columns{align-items:start;gap:18px}
+.card{border-radius:21px;box-shadow:0 13px 32px #17171d25,inset 0 1px 0 #ffffff09;transition:border-color .2s,box-shadow .2s}
+.columns>.card{min-width:0}
+.head{margin-bottom:17px}
+.head h2,.head h3{font-size:18px;letter-spacing:-.45px}
+.section-title{font-size:29px;letter-spacing:-1px;margin-top:8px}
+.section-desc{font-size:13px;line-height:1.6;max-width:720px;margin-bottom:22px}
+.task{padding:15px;margin:8px 0;border-radius:16px;gap:13px}
+.task .iconbox,.shop-item .iconbox,.shop-preview .iconbox{width:45px;height:45px;border-radius:14px;font-size:21px}
+.task .grow strong,.shop-item .grow strong{font-size:13px;letter-spacing:-.1px}
+.task .grow small,.shop-item .grow small{line-height:1.5}
+.task-tools{gap:7px}
+.reward-tag{letter-spacing:.1px}
+.btn{padding:10px 15px;transition:transform .18s,filter .18s,box-shadow .18s;box-shadow:0 5px 13px #17131f22}
+.btn:focus-visible,.nav button:focus-visible,.field:focus-visible{outline:3px solid #d1b7f2;outline-offset:2px}
+.btn.secondary,.btn.ghost{box-shadow:none}
+.btn:hover{box-shadow:0 8px 17px #17131f35}
+.mission-toolbar{padding:14px 16px;margin:4px 0 15px}
+.formgrid{padding:15px;background:#292a3190;border:1px solid #ffffff0d;border-radius:16px}
+.field{min-height:42px;transition:border-color .2s,box-shadow .2s}
+.field::placeholder{color:#a7a2b0}
+.quick-shop-card{background:linear-gradient(145deg,#393a43,#303139);}
+.shop-preview-grid{grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.shop-preview{min-height:76px;transition:transform .2s,border-color .2s,background .2s}
+.shop-preview:hover{transform:translateY(-2px);border-color:#9c86b2;background:#45414b}
+.shop-item{padding:15px 12px;border-bottom-color:#ffffff12}
+#page-shop>.card:first-of-type{padding:23px}
+#page-shop .card[style*="background:#101624"]{background:#292a31!important;border-color:#55545f}
+.cart-line{padding:13px 4px}
+.cart-total{font-size:15px;border-top:1px solid #ffffff16}
+.badge-grid{gap:14px}
+.badge{min-height:150px;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:transform .2s,border-color .2s,background .2s}
+.badge:hover{transform:translateY(-3px);border-color:#a28ab8}
+.badge .medal{font-size:35px;margin-bottom:3px}
+.badge.unlocked{box-shadow:0 8px 22px #17141d28,inset 0 1px 0 #ffffff14}
+.chart{height:195px;padding-top:22px;gap:13px}
+.daybar i{max-width:46px;box-shadow:0 4px 12px #c7a9e533;transition:height .35s}
+.focus-box{padding:42px 22px;border-radius:24px;background:radial-gradient(ellipse at 50% 0%,#62536b55,transparent 55%),linear-gradient(145deg,#393a43,#303139)}
+.focus-time{font-size:clamp(58px,10vw,88px);letter-spacing:-4px;text-shadow:0 5px 28px #e4c99424}
+#focusStart{min-width:145px}
+.modal{box-shadow:0 25px 80px #09090d88}
+footer{padding:18px 10px 0;border-top:1px solid #ffffff10;letter-spacing:.2px;line-height:1.7}
+#rewardTimer{backdrop-filter:blur(12px);box-shadow:0 10px 35px #1118!important;padding:12px 16px!important}
+@media(max-width:850px){.hero{grid-template-columns:1fr}.hero-main{min-height:210px}.level-card{min-height:190px}.nav{top:6px}.section-title{font-size:26px}}
+@media(max-width:560px){.app{padding:17px 12px 38px}.top{padding-bottom:14px}.brand b{font-size:19px}.nav{margin-left:-2px;margin-right:-2px;top:4px}.nav button.active:after{bottom:3px}.hero-main{min-height:220px}.hero h1{font-size:34px}.hero-main:before{font-size:8px;right:15px}.stats{gap:10px}.stat{min-height:112px;padding:14px}.stat strong{font-size:25px}.section-title{font-size:24px}.section-desc{font-size:12px}.task{padding:12px 10px}.task .row-actions{width:100%;margin-left:0;justify-content:flex-end}.formgrid{padding:11px}.badge{min-height:135px}.focus-box{padding:30px 15px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+
+/* ===== MOVIMENTO VIVO + MICROINTERAÇÕES ===== */
+body::before{content:"";position:fixed;inset:-20%;z-index:-1;pointer-events:none;background:radial-gradient(circle at 25% 35%,#c7a9e510 0 2px,transparent 3px),radial-gradient(circle at 72% 62%,#e7c9940d 0 2px,transparent 3px),radial-gradient(ellipse at 50% 50%,#c5a8e80b,transparent 55%);background-size:190px 190px,240px 240px,100% 100%;animation:ambientDrift 28s ease-in-out infinite alternate}
+.logo{animation:logoFloat 4.5s ease-in-out infinite}
+.logo:after{animation:ringBreathe 3.5s ease-in-out infinite}
+.hero-main{isolation:isolate}
+.hero-main:before{animation:labelGlow 5s ease-in-out infinite alternate}
+.hero-main:after{animation:heroStar 8s ease-in-out infinite}
+.level-card{animation:cardArrive .75s .12s both}
+.stat{animation:cardArrive .65s both}
+.stat:nth-child(2){animation-delay:.07s}.stat:nth-child(3){animation-delay:.14s}.stat:nth-child(4){animation-delay:.21s}
+.columns>.card{animation:cardArrive .7s .16s both}
+.task{animation:taskEnter .38s both}
+.task:nth-child(2){animation-delay:.04s}.task:nth-child(3){animation-delay:.08s}.task:nth-child(4){animation-delay:.12s}.task:nth-child(5){animation-delay:.16s}
+.iconbox{transition:transform .3s,filter .3s}
+.task:hover .iconbox,.shop-item:hover .iconbox,.shop-preview:hover .iconbox{transform:rotate(-7deg) scale(1.09);filter:drop-shadow(0 4px 8px #c5a8e833)}
+.btn:active,.enter-btn:active{transform:scale(.96)}
+.nav button.active{animation:navPop .28s ease-out}
+.card:hover{border-color:#b9a2cc55;box-shadow:0 17px 38px #17171d32,inset 0 1px 0 #ffffff12}
+.badge.unlocked .medal{animation:medalShine 3.8s ease-in-out infinite}
+.focus-time{animation:focusBreath 5s ease-in-out infinite}
+.audio-dock{position:fixed;left:16px;bottom:16px;z-index:40;display:flex;gap:7px;padding:7px;background:#292a31df;border:1px solid #ffffff20;border-radius:15px;box-shadow:0 12px 32px #1115;backdrop-filter:blur(16px)}
+.audio-dock button{border:1px solid #ffffff13;background:#3a3943;color:#eee8f3;border-radius:10px;padding:9px 12px;font-size:11px;font-weight:800;transition:transform .2s,background .2s,border-color .2s}
+.audio-dock button:hover{transform:translateY(-2px);background:#51485a;border-color:#c7a9e866}
+.audio-dock button.on{background:#51445f;border-color:#d5b9ee88;color:#f8edff}
+.audio-dock .audio-state{align-self:center;color:#c8c1ce;font-size:10px;padding:0 5px;white-space:nowrap}
+@keyframes ambientDrift{from{transform:translate3d(-1%,0,0) rotate(0deg)}to{transform:translate3d(1%,1.5%,0) rotate(3deg)}}
+@keyframes logoFloat{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-4px) rotate(3deg)}}
+@keyframes ringBreathe{0%,100%{opacity:.45;transform:scale(1)}50%{opacity:1;transform:scale(1.08)}}
+@keyframes labelGlow{from{opacity:.55}to{opacity:1;text-shadow:0 0 18px #ead7f455}}
+@keyframes heroStar{0%,100%{transform:rotate(-12deg) scale(1);opacity:.65}50%{transform:rotate(3deg) scale(1.05);opacity:1}}
+@keyframes cardArrive{from{opacity:0;transform:translateY(13px)}to{opacity:1;transform:translateY(0)}}
+@keyframes taskEnter{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
+@keyframes navPop{from{transform:scale(.96)}to{transform:scale(1)}}
+@keyframes medalShine{0%,100%{filter:drop-shadow(0 0 0 #e7c99400)}50%{filter:drop-shadow(0 0 9px #e7c99477)}}
+@keyframes focusBreath{0%,100%{text-shadow:0 5px 20px #e4c99415}50%{text-shadow:0 5px 35px #e4c99455}}
+@media(max-width:560px){.audio-dock{left:9px;bottom:9px;padding:6px}.audio-dock button{padding:9px 10px}.audio-dock .audio-state{display:none}footer{padding-bottom:42px}}
+@media(prefers-reduced-motion:reduce){body::before,.logo,.logo:after,.hero-main:before,.hero-main:after,.level-card,.stat,.columns>.card,.task,.nav button.active,.badge.unlocked .medal,.focus-time{animation:none!important}}
+
+
+/* ===== CAMADA EXTRA: MUNDO VIVO, LUZ E RESPOSTAS VISUAIS ===== */
+:root{--life-lilac:#d9c2f4;--life-cream:#f1d9a8}
+body{background-attachment:fixed}
+body:after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.28;background:linear-gradient(115deg,transparent 0 38%,#ffffff05 48%,transparent 58%),radial-gradient(ellipse at 18% 82%,#c7a9e510,transparent 34%);background-size:220% 220%,100% 100%;animation:worldLight 24s ease-in-out infinite alternate}
+#lifeCanvas{position:fixed;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none;opacity:.72}
+.card,.task,.shop-item,.shop-preview,.badge,.challenge,.stat{transform-style:preserve-3d}
+.card{position:relative}
+.card:before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(115deg,#fff0 15%,#fff1 48%,#fff0 75%);opacity:0;transition:opacity .35s}
+.card:hover:before{opacity:1}
+.hero-main{background-size:180% 180%;animation:heroGradient 13s ease infinite alternate}
+.hero-main:after{content:"✧";text-shadow:0 0 30px #f1d9a822}
+.level-card{background-image:radial-gradient(circle at 100% 0%,#e7c58a16,transparent 42%),linear-gradient(145deg,#393a43,#303139)}
+.bar>i{position:relative;overflow:hidden}
+.bar>i:after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent,#ffffff77,transparent);transform:translateX(-120%);animation:barShine 3.8s ease-in-out infinite}
+.stat .ico{transition:transform .35s,filter .35s}
+.stat:hover .ico{transform:translateY(-4px) rotate(8deg) scale(1.12);filter:drop-shadow(0 5px 8px #e7c58a55)}
+.task,.shop-item,.shop-preview,.badge,.challenge{transition:transform .28s cubic-bezier(.2,.8,.2,1),box-shadow .28s,border-color .28s,background .28s}
+.task:hover,.shop-item:hover{transform:translateX(4px);box-shadow:0 9px 22px #17141d30}
+.challenge{position:relative;overflow:hidden}
+.challenge:after{content:"✦";position:absolute;right:15px;top:4px;font-size:46px;color:#e7c99418;animation:starFloat 5s ease-in-out infinite}
+.badge.unlocked{position:relative;overflow:hidden}
+.badge.unlocked:after{content:"";position:absolute;top:-80%;left:-40%;width:35%;height:260%;transform:rotate(25deg);background:linear-gradient(90deg,transparent,#ffffff22,transparent);animation:badgeSweep 6s ease-in-out infinite}
+.btn,.enter-btn,.audio-dock button{position:relative;overflow:hidden}
+.ripple{position:absolute;border-radius:50%;pointer-events:none;background:#fff8;transform:scale(0);animation:rippleOut .55s ease-out forwards}
+.nav button.active{box-shadow:inset 0 0 0 1px #9a83b0,0 4px 16px #c7a9e51a}
+.page.active{animation:pageReveal .48s cubic-bezier(.2,.8,.2,1) both}
+.toast{backdrop-filter:blur(12px);border:1px solid #ffffff70}
+.audio-dock{animation:dockAppear .7s .8s both}
+.audio-dock button:active{transform:scale(.94)}
+.landing .entry-portal{animation:portalHover 6s ease-in-out infinite}
+.landing .landing-kicker{animation:kickerGlow 4s ease-in-out infinite alternate}
+.landing-stat{transition:transform .25s,border-color .25s,background .25s}
+.landing-stat:hover{transform:translateY(-4px);border-color:#d9c6e588;background:#45434bba}
+@keyframes worldLight{0%{background-position:0% 0%,0 0%}100%{background-position:100% 100%,0 0%}}
+@keyframes heroGradient{0%{background-position:0% 40%}100%{background-position:100% 60%}}
+@keyframes barShine{0%,60%{transform:translateX(-120%)}85%,100%{transform:translateX(120%)}}
+@keyframes starFloat{0%,100%{transform:translateY(0) rotate(0);opacity:.5}50%{transform:translateY(-8px) rotate(15deg);opacity:1}}
+@keyframes badgeSweep{0%,65%{left:-50%}100%{left:130%}}
+@keyframes rippleOut{to{transform:scale(4);opacity:0}}
+@keyframes dockAppear{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes portalHover{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+@keyframes kickerGlow{from{box-shadow:0 8px 30px #15151a33}to{box-shadow:0 8px 35px #d9c6e522}}
+@media(prefers-reduced-motion:reduce){body:after,.hero-main,.bar>i:after,.challenge:after,.badge.unlocked:after,.audio-dock,.landing .entry-portal,.landing .landing-kicker{animation:none!important}}
+
+
+/* Carteira de tempo de lazer */
+.wallet-hero{position:relative;overflow:hidden;text-align:center;padding:30px 20px;margin-bottom:15px;background:radial-gradient(ellipse at 50% 0%,#76618d55,transparent 58%),linear-gradient(135deg,#33313b,#22232d 58%,#2c2938);border-color:#71617f;box-shadow:0 18px 55px #15121d55}
+.wallet-hero:after{content:"";position:absolute;width:260px;height:260px;border:1px solid #d7c0f21b;border-radius:50%;left:50%;top:50%;transform:translate(-50%,-30%);box-shadow:0 0 0 25px #d7c0f208,0 0 0 55px #d7c0f205;pointer-events:none}
+.wallet-orb{width:58px;height:58px;margin:0 auto 12px;display:grid;place-items:center;border-radius:20px;background:linear-gradient(145deg,#665575,#393344);font-size:28px;box-shadow:0 8px 28px #0004,inset 0 1px #fff3;animation:walletFloat 4s ease-in-out infinite}
+.wallet-label,.wallet-sub,.leisure-caption{color:#c8bfd2;font-size:11px;letter-spacing:1.5px}.wallet-total{font:700 clamp(38px,7vw,58px) 'Space Grotesk';letter-spacing:-2px;color:#f0e5ff;margin:7px 0;text-shadow:0 0 28px #c7a9e555}.wallet-sub{letter-spacing:0}.wallet-progress{height:5px;max-width:360px;margin:20px auto 0;background:#ffffff19;border-radius:9px;overflow:hidden}.wallet-progress i{display:block;width:0;height:100%;background:linear-gradient(90deg,#c5a9e6,#f0d8a7);border-radius:9px;transition:width .4s}
+.leisure-player{padding:23px;background:linear-gradient(145deg,#292a34,#1c202c);border-color:#57515f}.player-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}.player-top h2{font:700 19px 'Space Grotesk';margin:6px 0}.live-pill{font-size:9px;letter-spacing:1px;padding:7px 10px;border-radius:30px;background:#34313b;color:#d5c7e5;white-space:nowrap}.live-pill.running{background:#1d443e;color:#a6f1d8}.leisure-clock{font:700 clamp(48px,10vw,76px) 'Space Grotesk';text-align:center;letter-spacing:-3px;margin:20px 0 3px;color:#e4d3ff;text-shadow:0 0 34px #b99bdc55;font-variant-numeric:tabular-nums}.leisure-caption{text-align:center;letter-spacing:0;margin-bottom:18px}.wallet-controls{display:flex;justify-content:center;gap:9px;flex-wrap:wrap}.wallet-controls .btn{min-width:125px}.wallet-config{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:24px;padding-top:18px;border-top:1px solid #ffffff16}.duration-input{display:flex;align-items:center;gap:9px}.duration-input .field{max-width:125px}.duration-input span{font-size:11px;color:var(--muted)}.wallet-info-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:15px 0}.wallet-info{display:flex;flex-direction:column;gap:5px}.wallet-info>span{font-size:21px}.wallet-info strong{font:700 23px 'Space Grotesk';color:#e7d9f5}.wallet-info small{font-size:10px;color:var(--muted)}.wallet-history{margin-top:15px}.leisure-entry{display:flex;align-items:center;gap:11px;padding:12px 2px;border-bottom:1px solid #ffffff12}.leisure-entry:last-child{border:0}.leisure-entry .entry-icon{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:#3b3448;font-size:18px}.leisure-entry .grow small{display:block;color:var(--muted);font-size:10px;margin-top:3px}.leisure-entry b{font-size:12px;color:#d9c8ef}.leisure-entry.credit b{color:#9ce3c8}
+@keyframes walletFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@media(max-width:600px){.wallet-config{grid-template-columns:1fr}.wallet-info-grid{gap:8px}.wallet-info{padding:13px}.wallet-info strong{font-size:19px}.player-top{flex-direction:column}.wallet-controls .btn{flex:1;min-width:100px}}
+
+
+/* ===== CONTA, PERFIL E SINCRONIZAÇÃO ===== */
+.profile-chip{display:flex;align-items:center;gap:8px;border:1px solid #777080;background:linear-gradient(135deg,#49434f,#3b3d43);color:#f8f2ff;border-radius:30px;padding:5px 12px 5px 6px;font-weight:800;font-size:11px;cursor:pointer;max-width:180px}.profile-chip img{width:29px;height:29px;border-radius:50%;object-fit:cover;background:#786887;display:block}.profile-chip img[src=""]{visibility:hidden;width:0}.auth-gate{position:fixed;inset:0;z-index:950;display:none;place-items:center;padding:20px;background:radial-gradient(ellipse at 50% 15%,#685978 0%,#393940 48%,#25262c 100%);overflow:auto}.auth-gate.show{display:grid}.auth-panel{width:min(460px,100%);padding:30px;border-radius:26px;border:1px solid #82758d;background:linear-gradient(145deg,#41404aee,#303139f5);box-shadow:0 30px 90px #1119;text-align:center;backdrop-filter:blur(18px);animation:authRise .5s both}.auth-emblem{width:54px;height:54px;margin:0 auto 16px;display:grid;place-items:center;border-radius:18px;background:linear-gradient(135deg,#dfc8f7,#b69bd7);color:#352d3d;font-size:28px;box-shadow:0 0 35px #d2b5ed55}.auth-panel h2{font:700 27px 'Space Grotesk';margin:8px 0}.auth-intro{font-size:12px;line-height:1.6;color:#d0cad7;margin:0 0 18px}.auth-tabs{display:grid;grid-template-columns:1fr 1fr;gap:5px;background:#292a31;padding:5px;border-radius:12px;margin-bottom:14px}.auth-tabs button{border:0;background:transparent;color:#c7c0ce;padding:10px;border-radius:9px;font-weight:800}.auth-tabs button.active{background:#63536f;color:#fff}.google-btn{width:100%;border:1px solid #77727e;background:#f7f5f8;color:#28242d;border-radius:11px;padding:12px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:12px}.google-btn:first-letter{font-size:20px}.google-btn span{font-size:13px}.auth-divider{display:flex;align-items:center;gap:12px;color:#c2bacb;font-size:10px;margin:17px 0}.auth-divider:before,.auth-divider:after{content:'';height:1px;background:#77717f55;flex:1}.auth-panel .fieldlabel{text-align:left;margin-top:10px}.auth-field{margin-bottom:4px;padding:12px}.auth-extra{text-align:right;margin:8px 0}.auth-extra button{border:0;background:none;color:#e0cafa;font-size:11px;text-decoration:underline;cursor:pointer}.auth-submit{width:100%;padding:13px;margin-top:6px}.offline-btn{width:100%;border:0;background:transparent;color:#d0c6d9;text-decoration:underline;font-size:11px;padding:13px 5px 4px;cursor:pointer}.auth-message{min-height:16px;color:#f4d4a0;font-size:11px;line-height:1.5;margin:9px 0 0}.setup-note{margin-top:16px;text-align:left;background:#272830;border:1px solid #6c6273;border-radius:12px;padding:12px;color:#d3ced9;font-size:10px;line-height:1.6}.setup-note code{color:#e6d2fa}.profile-modal{position:fixed;inset:0;z-index:900;background:#17171dcc;display:none;place-items:center;padding:18px}.profile-modal.show{display:grid}.profile-card{position:relative;width:min(390px,100%);background:linear-gradient(145deg,#45414c,#303139);border:1px solid #777080;border-radius:22px;padding:25px;box-shadow:0 25px 80px #0008}.profile-card h2{font:700 24px 'Space Grotesk';margin:7px 0 18px}.profile-close{position:absolute;right:15px;top:12px;border:0;background:transparent;color:white;font-size:25px;cursor:pointer}.profile-preview{display:flex;align-items:center;gap:13px;padding:14px;background:#292a31;border-radius:15px;margin-bottom:16px}.profile-preview img{width:58px;height:58px;border-radius:50%;object-fit:cover;background:#786887}.profile-preview strong,.profile-preview small{display:block}.profile-preview small{color:#bdb6c7;font-size:11px;margin-top:4px}.upload-photo{display:block;text-align:center;width:100%;cursor:pointer}.profile-signout{width:100%;margin-top:9px}.profile-card .muted{margin-top:13px}.volume-control{display:flex;align-items:center;gap:5px;color:#e3dce8;font-size:9px;white-space:nowrap}.volume-control input{width:66px;accent-color:#d1b5ed}.audio-dock{flex-wrap:wrap;max-width:calc(100vw - 25px)}
+@keyframes authRise{from{opacity:0;transform:translateY(15px) scale(.98)}to{opacity:1;transform:none}}
+@media(max-width:700px){.auth-panel{padding:23px 19px}.audio-dock{right:9px;left:9px;justify-content:center}.volume-control input{width:52px}.audio-dock .audio-state{display:none}.profile-chip{max-width:145px}.profile-chip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
+
+</style></head>
+<body class="landing-open">
+<section class="landing" id="landing" aria-label="Tela de entrada do LEVEL UP">
+ <div class="portal-orbit" aria-hidden="true"></div>
+ <div class="landing-content">
+  <div class="landing-kicker">Sua próxima fase começa aqui</div>
+  <div class="entry-portal" aria-hidden="true">
+   <div class="glow"></div>
+   <div class="entry-door"><span class="door-light"></span><span class="door-lines"></span><span class="door-knob"></span></div>
+  </div>
+  <h1>LEVEL UP</h1>
+  <p class="landing-sub">Transforme disciplina em progresso, progresso em conquistas e conquistas em liberdade.</p>
+  <div class="landing-stats">
+   <div class="landing-stat"><strong>MISSÕES</strong>Conquiste seu dia</div>
+   <div class="landing-stat"><strong>MOEDAS</strong>Ganhe seu lazer</div>
+   <div class="landing-stat"><strong>XP</strong>Suba de nível</div>
+  </div>
+  <button class="enter-btn" id="enterSite">Entrar na minha jornada&nbsp; →</button>
+  <small class="landing-foot">DISCIPLINA · CONSTÂNCIA · EVOLUÇÃO</small>
+ </div>
+</section>
+<section class="auth-gate" id="authGate" aria-label="Acesso à conta LEVEL UP">
+ <div class="auth-panel">
+  <div class="auth-emblem">✦</div><div class="eyebrow">SUA JORNADA, EM QUALQUER DISPOSITIVO</div>
+  <h2 id="authTitle">Entre no seu LEVEL UP</h2><p class="auth-intro">Entre com Google ou use seu Gmail e senha. Seu progresso poderá acompanhar você entre dispositivos.</p>
+  <div class="auth-tabs"><button class="active" id="loginTab">Entrar</button><button id="signupTab">Criar conta</button></div>
+  <button class="google-btn" id="googleLogin">G <span>Continuar com Google</span></button>
+  <div class="auth-divider"><span>ou com e-mail</span></div>
+  <label class="fieldlabel" for="authEmail">Gmail ou e-mail</label><input class="field auth-field" id="authEmail" type="email" autocomplete="email" placeholder="voce@gmail.com">
+  <label class="fieldlabel" for="authPassword">Senha</label><input class="field auth-field" id="authPassword" type="password" autocomplete="current-password" placeholder="Mínimo de 6 caracteres">
+  <div class="auth-extra"><button id="forgotPassword" type="button">Esqueci minha senha</button></div>
+  <button class="btn auth-submit" id="emailSubmit">Entrar na conta</button>
+  <button class="offline-btn" id="offlineMode" type="button">Continuar sem conta neste dispositivo</button>
+  <p class="auth-message" id="authMessage"></p>
+  <div class="setup-note" id="firebaseSetupNote"><strong>Configuração necessária para ativar contas reais</strong><br>O acesso real precisa ser conectado ao seu projeto Firebase. Depois de criar o projeto no console do Firebase, cole as credenciais no bloco <code>FIREBASE_CONFIG</code> no final deste arquivo e ative Authentication (Google e E-mail/senha) e Firestore. O modo local continua disponível enquanto isso.</div>
+ </div>
+</section>
+<div class="app">
+<header class="top"><div class="brand"><div class="logo">✦</div><div><b>LEVEL UP</b><small>Sua evolução. Suas conquistas. Seu tempo.</small></div></div><div class="top-right"><div class="chip">🪙 <strong id="topCoins">0 moedas</strong></div><div class="chip">🔥 <strong id="topStreak">0 dias</strong></div><button class="profile-chip" id="profileButton" type="button"><img id="profileAvatar" alt="Foto de perfil" src=""/><span id="profileLabel">Entrar / Perfil</span></button></div></header>
+<nav class="nav" id="nav"><button class="active" data-page="home">⌂ Painel</button><button data-page="missions">⚡ Missões</button><button data-page="shop">🛍 Loja <span class="cart-count" id="cartBadge">0</span></button><button data-page="wallet">⏳ Meu tempo</button><button data-page="achievements">🏆 Conquistas</button><button data-page="stats">▥ Estatísticas</button><button data-page="focus">◷ Modo foco</button></nav>
+<main>
+<section class="page active" id="page-home">
+<div class="hero"><div class="card hero-main"><div class="eyebrow">Seu próximo nível começa hoje</div><h1>Faça por merecer<br>seu tempo livre.</h1><p>Transforme leitura, estudos e bons hábitos em moedas, XP e recompensas. Cada pequena missão é um passo na sua evolução.</p></div><div class="card level-card"><div class="level-top"><span class="eyebrow">Seu nível atual</span><span style="font-size:22px">✧</span></div><div><div class="level-number" id="level">01</div><div class="level-title" id="rank">Iniciante</div><button class="btn ghost" id="resetXP" style="margin-top:10px;padding:7px 10px;font-size:11px">↺ Resetar XP</button><button class="btn danger" id="resetAll" style="margin-top:7px;padding:7px 10px;font-size:11px;width:100%">⟲ Resetar tudo</button><div class="bar"><i id="xpBar"></i></div><div class="bar-meta"><span id="xpText">0 / 100 XP</span><span>Próximo nível</span></div></div></div></div>
+<div class="stats"><div class="card stat"><div class="ico">🪙</div><strong id="coins">0</strong><span>Moedas disponíveis</span></div><div class="card stat"><div class="ico">✨</div><strong id="xp">0</strong><span>XP acumulado</span></div><div class="card stat"><div class="ico">🔥</div><strong id="streak">0 dias</strong><span>Sequência atual</span></div><div class="card stat"><div class="ico">📚</div><strong id="pages">0</strong><span>Páginas registradas</span></div></div>
+<div class="columns"><div class="card"><div class="head"><div><h2>Missões em destaque</h2><div class="small muted">Conclua para ganhar moedas e XP.</div></div><button class="btn ghost" onclick="go('missions')">Ver todas ↗</button></div><div id="homeTasks"></div></div><div class="card"><div class="head"><div><h2>Desafio do dia</h2><div class="small muted">Um passo de cada vez.</div></div><span class="chip">DIÁRIO</span></div><div id="homeChallenge"></div><div class="head" style="margin-top:17px"><h3>Últimas atividades</h3></div><div id="homeHistory"></div></div></div>
+</section>
+<section class="page" id="page-missions"><h1 class="section-title">Central de missões</h1><p class="section-desc">Crie objetivos que façam sentido para sua rotina. Cada missão concluída rende moedas e experiência.</p><div class="card"><div class="head"><div><h2>Suas missões</h2><div class="small muted">Organize pelo valor da recompensa e escolha sua próxima meta.</div></div><span class="chip" id="missionCount">0 missões</span></div><div class="mission-toolbar"><span class="mission-count-note">Escolha como deseja visualizar</span><div class="sort-group"><label class="sort-label" for="missionSort">Ordenar:</label><select class="field sort-select" id="missionSort"><option value="high">Maior recompensa primeiro</option><option value="low">Menor recompensa primeiro</option><option value="name">Nome (A–Z)</option><option value="default">Ordem original</option></select></div></div><div id="allTasks"></div><div style="border-top:1px solid var(--line);margin-top:12px;padding-top:15px"><h3 style="margin:0;font:700 15px 'Space Grotesk'">Criar nova missão</h3><div class="formgrid"><div><label class="fieldlabel">Nome da missão</label><input class="field" id="taskName" placeholder="Ex.: Ler um capítulo"></div><div><label class="fieldlabel">Quantidade</label><input class="field" id="taskGoal" type="number" min="1" value="10"></div><div><label class="fieldlabel">Unidade</label><select class="field" id="taskUnit"><option>páginas</option><option>minutos</option><option>exercícios</option><option>tarefas</option><option>capítulos</option></select></div><div><label class="fieldlabel">Moedas</label><input class="field" id="taskCoins" type="number" min="1" value="30"></div><button class="btn" id="addTask" style="align-self:end">+ Criar</button></div><p class="small muted">Sugestão: os valores consideram o tempo e o esforço da atividade. Ajuste livremente se alguma missão ficar fácil ou difícil demais.</p></div></div><div class="card quick-shop-card" style="margin-top:16px"><div class="head"><div><h2>Loja rápida</h2><div class="small muted">Uma prévia das recompensas que você pode desbloquear.</div></div><button class="btn ghost" onclick="go('shop')">Abrir loja completa ↗</button></div><div class="shop-preview-grid" id="missionShopPreview"></div></div></section>
+<section class="page" id="page-shop"><h1 class="section-title">Loja de recompensas</h1><p class="section-desc">Use suas moedas para desbloquear tempo de lazer. Você pode editar, criar ou remover recompensas.</p><div class="card"><div class="head"><h2>Seu catálogo</h2><span class="chip">🪙 <b id="shopCoins">0</b></span></div><div id="shopItems"></div><div class="card" style="margin-top:16px;background:#101624;box-shadow:none"><div class="head"><div><h2>🛒 Seu carrinho</h2><div class="small muted">Adicione recompensas e resgate tudo de uma vez.</div></div><span class="chip" id="cartSummary">0 itens</span></div><div id="cartItems"></div><div class="cart-total"><span>Total</span><span class="shop-price" id="cartTotal">0 moedas</span></div><div class="row-actions" style="justify-content:flex-end;margin-top:12px"><button class="btn ghost" onclick="clearCart()">Esvaziar</button><button class="btn" id="checkoutCart" onclick="checkoutCart()">Finalizar compra</button></div></div><div style="border-top:1px solid var(--line);padding-top:15px;margin-top:12px"><h3 style="font:700 15px 'Space Grotesk';margin:0 0 12px">Adicionar recompensa</h3><div class="formgrid" style="grid-template-columns:1.2fr .7fr .7fr .7fr auto"><div><label class="fieldlabel">Atividade</label><input class="field" id="shopName" placeholder="Ex.: Jogar no Switch"></div><div><label class="fieldlabel">Preço (moedas)</label><input class="field" id="shopPrice" type="number" min="1" value="60"></div><div><label class="fieldlabel">Duração (em minutos)</label><input class="field" id="shopDuration" type="number" min="1" value="60"></div><div><label class="fieldlabel">Ícone</label><select class="field" id="shopIcon"><option>🎮</option><option>📺</option><option>🎧</option><option>📱</option><option>🌿</option><option>⭐</option></select></div><button class="btn" id="addShop" style="align-self:end">+ Criar</button></div><p class="small muted">Ao resgatar, o preço é descontado e o cronômetro começa a contar.</p></div></div><div class="card" style="margin-top:15px"><div class="eyebrow">Como funciona</div><h3 style="margin:7px 0">Moedas viram tempo de lazer.</h3><p class="muted small">Os preços foram ajustados para que uma hora de lazer exija algumas missões, sem tornar as recompensas impossíveis. Atividades mais longas ou difíceis rendem mais moedas.</p></div></section>
+<section class="page" id="page-wallet"><div class="eyebrow">Seu descanso, conquistado</div><h1 class="section-title">Meu tempo</h1><p class="section-desc">Tudo o que você resgatar na loja fica guardado aqui. Escolha quando usar e acompanhe seu tempo com um cronômetro.</p><div class="wallet-hero card"><div class="wallet-orb">⏳</div><div class="wallet-label">TEMPO DISPONÍVEL</div><div class="wallet-total" id="walletBalance">0h 00min</div><div class="wallet-sub" id="walletBalanceSub">Seu saldo de lazer está esperando por você.</div><div class="wallet-progress"><i id="walletProgress"></i></div></div><div class="card leisure-player"><div class="player-top"><div><div class="eyebrow">Central de lazer</div><h2 id="leisureTitle">Seu próximo momento começa aqui</h2></div><span class="live-pill" id="leisureState">● PRONTO</span></div><div class="leisure-clock" id="leisureClock">00:00:00</div><div class="leisure-caption" id="leisureCaption">Escolha quanto tempo deseja aproveitar.</div><div class="wallet-controls"><button class="btn" id="leisureStart" onclick="startLeisure()">▶ Começar</button><button class="btn secondary" id="leisurePause" onclick="pauseLeisure()" disabled>Ⅱ Pausar</button><button class="btn ghost" id="leisureStop" onclick="stopLeisure()" disabled>↺ Devolver restante</button></div><div class="wallet-config"><div><label class="fieldlabel" for="leisureMinutes">Quanto tempo usar?</label><div class="duration-input"><input class="field" id="leisureMinutes" type="number" min="1" step="1" value="30"><span>minutos</span></div><small class="muted">Você pode usar uma parte do saldo ou todo ele.</small></div><div><label class="fieldlabel" for="leisureActivity">O que vai aproveitar?</label><input class="field" id="leisureActivity" maxlength="50" placeholder="Ex.: Jogar no Switch" value="Meu tempo livre"></div></div></div><div class="wallet-info-grid"><div class="card wallet-info"><span>🎁</span><strong id="walletBought">0 min</strong><small>Tempo resgatado na loja</small></div><div class="card wallet-info"><span>✨</span><strong id="walletUsed">0 min</strong><small>Tempo já aproveitado</small></div><div class="card wallet-info"><span>🌙</span><strong id="walletSessions">0</strong><small>Sessões finalizadas</small></div></div><div class="card wallet-history"><div class="head"><div><h2>Seu histórico de lazer</h2><div class="small muted">Compras e sessões ficam registradas aqui.</div></div></div><div id="leisureHistory"></div></div></section>
+<section class="page" id="page-achievements"><h1 class="section-title">Conquistas</h1><p class="section-desc">Marcos especiais da sua jornada. Algumas medalhas ainda estão bloqueadas — continue avançando!</p><div class="badge-grid" id="badges"></div></section>
+<section class="page" id="page-stats"><h1 class="section-title">Suas estatísticas</h1><p class="section-desc">Acompanhe sua consistência e veja como seu esforço se acumula ao longo do tempo.</p><div class="stats"><div class="card stat"><div class="ico">✅</div><strong id="totalTasks">0</strong><span>Missões concluídas</span></div><div class="card stat"><div class="ico">📖</div><strong id="totalPages">0</strong><span>Páginas lidas</span></div><div class="card stat"><div class="ico">🪙</div><strong id="earned">0</strong><span>Moedas conquistadas</span></div><div class="card stat"><div class="ico">⏱️</div><strong id="leisure">0h</strong><span>Tempo resgatado</span></div></div><div class="card"><div class="head"><h2>Atividade dos últimos 7 dias</h2><span class="small muted">Missões concluídas</span></div><div class="chart" id="chart"></div></div><div class="card" style="margin-top:15px"><div class="head"><h2>Histórico completo</h2><button class="btn ghost" id="clearHistory">Limpar histórico</button></div><div id="fullHistory"></div></div></section>
+<section class="page" id="page-focus"><h1 class="section-title">Modo foco</h1><p class="section-desc">Reserve um período para estudar, ler ou fazer uma tarefa sem distrações.</p><div class="card focus-box"><div class="eyebrow">Concentre-se no que importa</div><div style="max-width:260px;margin:18px auto"><label class="fieldlabel" style="text-align:left">O que você vai fazer?</label><input class="field" id="focusLabel" value="Sessão de estudos"></div><div style="max-width:160px;margin:auto"><label class="fieldlabel">Duração (minutos)</label><input class="field" id="focusMinutes" type="number" min="1" max="240" value="25"></div><div class="focus-time" id="focusClock">25:00</div><div class="focus-controls"><button class="btn" id="focusStart">Começar foco</button><button class="btn secondary" id="focusPause">Pausar</button><button class="btn ghost" id="focusReset">Reiniciar</button></div><div class="timer-note" id="focusStatus">Ao terminar, registre a atividade como uma missão concluída para receber sua recompensa.</div></div></section>
+</main><footer>LEVEL UP · Seu progresso é salvo na sua conta quando a sincronização está configurada. Use com equilíbrio: descanso também faz parte da evolução.</footer></div>
+<div class="modal-back" id="modal"><div class="modal"><h3 id="modalTitle">Editar</h3><div id="modalBody"></div><div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Cancelar</button><button class="btn" id="modalSave">Salvar</button></div></div></div><div class="toast" id="toast"></div>
+<div class="profile-modal" id="profileModal"><div class="profile-card"><button class="profile-close" id="profileClose">×</button><div class="eyebrow">SEU ESPAÇO</div><h2>Meu perfil</h2><div class="profile-preview"><img id="profileModalAvatar" alt="Sua foto de perfil" src=""/><div><strong id="profileName">Visitante</strong><small id="profileEmail">Modo local</small></div></div><label class="btn secondary upload-photo" for="profilePhoto">📷 Escolher foto de perfil</label><input id="profilePhoto" type="file" accept="image/*" hidden/><button class="btn auth-submit" id="profileConnect" type="button">Entrar / conectar conta</button><button class="btn ghost profile-signout" id="profileSignout">Sair da conta</button><p class="small muted" id="profileSyncInfo">Se estiver conectado, seus dados serão sincronizados.</p></div></div>
+<div class="audio-dock" aria-label="Controles de áudio"><button id="soundToggle" type="button" aria-pressed="true">🔊 Sons: ON</button><button id="musicToggle" type="button" aria-pressed="false">♫ Música: OFF</button><label class="volume-control">Sons <input id="soundVolume" type="range" min="20" max="100" value="85" aria-label="Volume dos efeitos sonoros"></label><label class="volume-control">Música <input id="musicVolume" type="range" min="10" max="100" value="75" aria-label="Volume da música"></label><span class="audio-state" id="audioState">Áudio opcional</span></div>
+<script>
+const $=id=>document.getElementById(id),today=()=>new Date().toISOString().slice(0,10),dateAgo=n=>{let d=new Date();d.setDate(d.getDate()-n);return d.toISOString().slice(0,10)};
+const baseTasks=[
+{id:1,name:"Ler 5 páginas",goal:5,unit:"páginas",coins:80,icon:"📖"},
+{id:2,name:"Ler 10 páginas",goal:10,unit:"páginas",coins:220,icon:"📚"},
+{id:3,name:"Estudar por 30 minutos",goal:30,unit:"minutos",coins:100,icon:"🧠"},
+{id:4,name:"Organizar o quarto",goal:1,unit:"tarefas",coins:45,icon:"🧹"},
+{id:5,name:"Ler 20 páginas",goal:20,unit:"páginas",coins:350,icon:"📘"},
+{id:6,name:"Estudar por 1 hora",goal:60,unit:"minutos",coins:190,icon:"🎓"},
+{id:7,name:"Meditar por 10 minutos",goal:10,unit:"minutos",coins:45,icon:"🧘"},
+{id:8,name:"Ler um capítulo da Bíblia",goal:1,unit:"capítulos",coins:50,icon:"✝️"},
+{id:9,name:"Planejar o dia seguinte",goal:1,unit:"vezes",coins:35,icon:"🗓️"},
+{id:10,name:"Fazer alongamento",goal:1,unit:"vezes",coins:30,icon:"🤸"},
+{id:11,name:"Lavar a louça",goal:1,unit:"vezes",coins:65,icon:"🫧"},
+{id:12,name:"Cumprir todas as tarefas do dia",goal:1,unit:"desafios",coins:240,icon:"🌟"},
+{id:13,name:"Terminar um livro",goal:1,unit:"livros",coins:320,icon:"🏆"},
+{id:14,name:"Completar 5 dias seguidos de tarefas",goal:1,unit:"desafios",coins:280,icon:"🔥"}
+];
+const baseShop=[
+{id:11,name:"Nintendo Switch",price:220,duration:60,icon:"🎮"},
+{id:12,name:"Jogar no PC",price:210,duration:60,icon:"🖥️"},
+{id:13,name:"Assistir Netflix / série",price:190,duration:60,icon:"📺"},
+{id:14,name:"Vídeos e descanso",price:120,duration:30,icon:"🎧"},
+{id:15,name:"Ouvir música e relaxar",price:90,duration:45,icon:"🎵"},
+{id:16,name:"Tempo para um hobby",price:180,duration:60,icon:"🎨"},
+{id:17,name:"Assistir a um filme",price:320,duration:120,icon:"🍿"},
+{id:18,name:"Lazer livre no fim de semana",price:480,duration:120,icon:"✨"}
+];
+let data=JSON.parse(localStorage.getItem("levelUpData")||"null")||{coins:0,xp:0,tasks:baseTasks,shop:baseShop,history:[],completed:0,pages:0,earned:0,redeemed:0,days:{},streak:0,lastDay:null,unlocked:[],focusSeconds:1500,focusEnd:null,focusLabel:"Sessão de estudos",activeReward:null,leisureBankSeconds:0,leisureBoughtSeconds:0,leisureUsedSeconds:0,leisureSessions:0,leisureActive:null,leisureHistory:[]};
+data.leisureBankSeconds=Number(data.leisureBankSeconds)||0;data.leisureBoughtSeconds=Number(data.leisureBoughtSeconds)||0;data.leisureUsedSeconds=Number(data.leisureUsedSeconds)||0;data.leisureSessions=Number(data.leisureSessions)||0;data.leisureHistory=Array.isArray(data.leisureHistory)?data.leisureHistory:[];
+data.cart=Array.isArray(data.cart)?data.cart:[];
+// Atualiza missões padrão em instalações que já tinham dados salvos, sem apagar personalizações.
+const knownTaskNames=new Set((data.tasks||[]).map(t=>t.name));
+baseTasks.forEach(t=>{
+  const existing=data.tasks.find(x=>x.name===t.name);
+  if(!existing)data.tasks.push({...t});
+  else if([1,2,3,4,5,6,7,8,9,10,11,12,13,14].includes(existing.id))existing.coins=t.coins;
+});
+// Atualiza preços e duração das recompensas padrão e adiciona as novas opções sem apagar itens personalizados.
+baseShop.forEach(item=>{
+  const existing=data.shop.find(x=>x.id===item.id || x.name===item.name);
+  if(existing){existing.name=item.name;existing.price=item.price;existing.duration=item.duration;existing.icon=item.icon;}
+  else data.shop.push({...item});
+});
+let focusInt=null,focusPaused=true,modalAction=null;
+function save(){localStorage.setItem("levelUpData",JSON.stringify(data));if(window.levelUpCloudSave)window.levelUpCloudSave(data)}
+function toast(s){let t=$("toast");t.textContent=s;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2300)}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function addHistory(text,detail){data.history.unshift({text,detail,date:new Date().toLocaleString("pt-BR"),day:today()});data.history=data.history.slice(0,100)}
+function level(){return Math.floor(data.xp/100)+1}
+function rank(){let l=level();return l>=20?"Lenda da Disciplina":l>=12?"Mestre da Disciplina":l>=8?"Consistente":l>=4?"Determinado":"Iniciante"}
+function updateStreak(){let y=data.lastDay;if(y===today())return;if(y===dateAgo(1)){data.streak=(data.streak||0)+1}else if(y!==today()){data.streak=1}data.lastDay=today()}
+function checkBadges(){let checks=[["first","Primeiro passo","Conclua sua primeira missão.","🌱",data.completed>=1],["five","Em movimento","Conclua 5 missões.","⚡",data.completed>=5],["twenty","Máquina de hábitos","Conclua 20 missões.","🏅",data.completed>=20],["pages50","Leitor iniciante","Leia 50 páginas.","📚",data.pages>=50],["pages100","Leitor dedicado","Leia 100 páginas.","📖",data.pages>=100],["streak3","Três dias","Mantenha uma sequência de 3 dias.","🔥",data.streak>=3],["streak7","Uma semana","Mantenha uma sequência de 7 dias.","💎",data.streak>=7],["level5","Subindo de nível","Alcance o nível 5.","🚀",level()>=5],["redeem","Hora do lazer","Resgate sua primeira recompensa.","🎮",data.redeemed>0]];checks.forEach(b=>{if(b[4]&&!data.unlocked.includes(b[0])){data.unlocked.push(b[0]);toast("Conquista desbloqueada: "+b[1]+"!")}});return checks}
+function taskHTML(t){return `<div class="task"><div class="iconbox">${t.icon||"⭐"}</div><div class="grow"><strong>${esc(t.name)}</strong><small>Meta: ${t.goal} ${esc(t.unit)} · recompensa: ${t.coins} moedas + ${Math.round(t.coins/2)} XP</small></div><span class="reward-tag">+${t.coins}</span><div class="row-actions"><button class="btn" onclick="completeTask(${t.id})">Concluir</button><button class="btn ghost" onclick="editTask(${t.id})" aria-label="Editar missão">✎</button></div></div>`}
+function sortedTasks(){let list=[...data.tasks],mode=$("missionSort")?.value||"high";if(mode==="high")list.sort((a,b)=>b.coins-a.coins);else if(mode==="low")list.sort((a,b)=>a.coins-b.coins);else if(mode==="name")list.sort((a,b)=>a.name.localeCompare(b.name,"pt-BR"));return list}
+function renderTasks(){let ordered=sortedTasks();let featured=[...data.tasks].sort((a,b)=>b.coins-a.coins);$("homeTasks").innerHTML=featured.slice(0,4).map(taskHTML).join("")||'<div class="empty">Crie sua primeira missão na aba Missões.</div>';$ ("allTasks").innerHTML=ordered.map(taskHTML).join("")||'<div class="empty">Nenhuma missão criada ainda.</div>';$ ("missionCount").textContent=data.tasks.length+" missões"}
+function challenge(){let c=[{name:"Pequeno começo",desc:"Conclua 1 missão hoje.",goal:1,progress:data.days[today()]||0},{name:"Dia produtivo",desc:"Conclua 2 missões hoje.",goal:2,progress:data.days[today()]||0},{name:"Ritmo de leitura",desc:"Registre uma missão de leitura hoje.",goal:1,progress:data.history.filter(h=>h.day===today()&&h.text.includes("Ler")).length}];let i=(Math.floor(Date.now()/86400000))%c.length;return c[i]}
+function renderShop(){
+$("shopItems").innerHTML=data.shop.map(s=>`<div class="shop-item"><div class="iconbox">${s.icon}</div><div class="grow"><strong>${esc(s.name)}</strong><small>${s.duration} min · ${durationLabel(s.duration)} de lazer · ${s.price} moedas</small></div><span class="shop-price">${s.price}</span><div class="row-actions"><button class="btn secondary" onclick="addToCart(${s.id})">+ Carrinho</button><button class="btn" ${data.coins<s.price?"disabled":""} onclick="buy(${s.id})">Resgatar</button><button class="btn ghost" onclick="editShop(${s.id})">✎</button><button class="btn ghost" onclick="removeShop(${s.id})">×</button></div></div>`).join("")||'<div class="empty">Adicione sua primeira recompensa.</div>';
+$("missionShopPreview").innerHTML=data.shop.map(s=>`<div class="shop-preview"><div class="iconbox">${s.icon}</div><div class="grow"><strong>${esc(s.name)}</strong><small>${s.duration} min · ${durationLabel(s.duration)}<br>${s.price} moedas</small></div><button class="btn secondary" onclick="addToCart(${s.id})">+</button></div>`).join("")||'<div class="empty">A loja está vazia.</div>';renderCart();
+}
+function renderCart(){let items=data.cart.map(id=>data.shop.find(s=>s.id===id)).filter(Boolean),total=items.reduce((n,s)=>n+s.price,0);$("cartBadge").textContent=items.length;$("cartSummary").textContent=items.length+ (items.length===1?" item":" itens");$("cartTotal").textContent=total+" moedas";$("cartItems").innerHTML=items.length?items.map((s,i)=>`<div class="cart-line"><div class="iconbox">${s.icon}</div><div class="grow"><strong>${esc(s.name)}</strong><small>${s.duration} min · ${durationLabel(s.duration)}</small></div><b class="shop-price">${s.price}</b><button class="btn ghost" onclick="removeFromCart(${i})">×</button></div>`).join(""):'<div class="empty">Seu carrinho está vazio. Adicione recompensas da loja.</div>';$('checkoutCart').disabled=!items.length||total>data.coins;}
+window.addToCart=id=>{if(!data.shop.some(s=>s.id===id))return;if(!data.cart.includes(id))data.cart.push(id);renderCart();save();toast("Adicionado ao carrinho!")};
+window.removeFromCart=i=>{data.cart.splice(i,1);renderCart();save()};window.clearCart=()=>{data.cart=[];renderCart();save()};
+window.checkoutCart=()=>{let items=data.cart.map(id=>data.shop.find(s=>s.id===id)).filter(Boolean),total=items.reduce((n,s)=>n+s.price,0),mins=items.reduce((n,s)=>n+s.duration,0);if(!items.length)return toast("Seu carrinho está vazio.");if(total>data.coins)return toast("Você não tem moedas suficientes para todo o carrinho.");let names=items.map(s=>s.name).join(", ");if(!confirm(`Resgatar ${items.length} recompensa(s) por ${total} moedas?
+Tempo total: ${mins} min (${durationLabel(mins)}).`))return;data.coins-=total;data.redeemed+=mins;data.leisureBankSeconds+=mins*60;data.leisureBoughtSeconds+=mins*60;addLeisureHistory("credit","Compra do carrinho",`${names} · ${durationLabel(mins)}`,`+${mins} min`);addHistory("Carrinho resgatado: "+names,total+" moedas · "+mins+" min adicionados à carteira");data.cart=[];render();go("wallet");toast("Tempo adicionado à sua carteira!")};
+function renderBadges(){let bs=checkBadges();$("badges").innerHTML=bs.map(b=>`<div class="badge ${data.unlocked.includes(b[0])?"unlocked":""}"><div class="medal">${b[3]}</div><strong>${b[1]}</strong><small>${b[2]}</small><div class="small" style="margin-top:8px;color:${data.unlocked.includes(b[0])?"var(--cyan)":"var(--muted)"}">${data.unlocked.includes(b[0])?"✓ Desbloqueada":"Bloqueada"}</div></div>`).join("")}
+function renderHistory(target,limit){let hs=data.history.slice(0,limit||data.history.length);$(target).innerHTML=hs.length?hs.map(h=>`<div class="history-row"><div class="grow"><strong>${esc(h.text)}</strong><small>${esc(h.detail)}</small></div><small class="muted">${esc(h.date)}</small></div>`).join(""):'<div class="empty">Suas atividades vão aparecer aqui.</div>'}
+function walletFmt(sec){sec=Math.max(0,Math.floor(sec||0));let h=Math.floor(sec/3600),m=Math.floor((sec%3600)/60),s=sec%60;return h?`${h}h ${String(m).padStart(2,"0")}min`:`${m}min ${String(s).padStart(2,"0")}s`}
+function leisureRemaining(){let a=data.leisureActive;if(!a)return 0;return a.running?Math.max(0,Math.ceil((a.endsAt-Date.now())/1000)):Math.max(0,Math.ceil(a.remainingSeconds||0))}
+function renderWallet(){let bank=data.leisureBankSeconds||0;$('walletBalance').textContent=walletFmt(bank);$('walletBalanceSub').textContent=bank?`Você tem ${Math.floor(bank/60)} minutos conquistados para aproveitar.`:'Seu saldo está vazio. Resgate uma recompensa na loja para adicionar tempo.';$('walletProgress').style.width=Math.min(100,(bank/7200)*100)+'%';$('walletBought').textContent=Math.floor(data.leisureBoughtSeconds/60)+' min';$('walletUsed').textContent=Math.floor(data.leisureUsedSeconds/60)+' min';$('walletSessions').textContent=data.leisureSessions;$('leisureMinutes').max=Math.max(1,Math.floor(bank/60));let a=data.leisureActive,left=leisureRemaining();$('leisureClock').textContent=fmt(left);$('leisureTitle').textContent=a?a.name:'Seu próximo momento começa aqui';$('leisureCaption').textContent=a?(a.running?'Cronômetro em andamento. Aproveite seu tempo!':'Sessão pausada. Você pode continuar quando quiser.'):'Escolha quanto tempo deseja aproveitar.';$('leisureState').textContent=a?(a.running?'● EM ANDAMENTO':'Ⅱ PAUSADO'):'● PRONTO';$('leisureState').classList.toggle('running',!!(a&&a.running));$('leisureStart').textContent=a&&!a.running?'▶ Continuar':'▶ Começar';$('leisureStart').disabled=!!(a&&a.running)||(!a&&bank<60);$('leisurePause').disabled=!(a&&a.running);$('leisureStop').disabled=!a;$('leisureMinutes').disabled=!!a;$('leisureActivity').disabled=!!a;$('leisureHistory').innerHTML=data.leisureHistory.length?data.leisureHistory.slice(0,20).map(h=>`<div class="leisure-entry ${h.kind==='credit'?'credit':''}"><div class="entry-icon">${h.kind==='credit'?'🎁':h.kind==='spent'?'✨':'⏱️'}</div><div class="grow"><strong>${esc(h.title)}</strong><small>${esc(h.detail)} · ${esc(h.date)}</small></div><b>${h.kind==='credit'?'+':''}${esc(h.amount)}</b></div>`).join(''):'<div class="empty">Quando você resgatar tempo ou concluir uma sessão, tudo aparecerá aqui.</div>'}
+function addLeisureHistory(kind,title,detail,amount){data.leisureHistory.unshift({kind,title,detail,amount,date:new Date().toLocaleString('pt-BR')});data.leisureHistory=data.leisureHistory.slice(0,50)}
+window.startLeisure=()=>{if(data.leisureActive){if(data.leisureActive.running)return;data.leisureActive.endsAt=Date.now()+data.leisureActive.remainingSeconds*1000;data.leisureActive.running=true;}else{let mins=Math.max(1,Math.floor(Number($('leisureMinutes').value)||0)),secs=mins*60;if(secs>data.leisureBankSeconds)return toast('Você não tem esse tempo disponível.');data.leisureBankSeconds-=secs;data.leisureActive={name:$('leisureActivity').value.trim()||'Meu tempo livre',remainingSeconds:secs,endsAt:Date.now()+secs*1000,running:true};addLeisureHistory('spent','Sessão iniciada: '+data.leisureActive.name,'Reservados '+mins+' min',`-${mins} min`)}save();renderWallet();};
+window.pauseLeisure=()=>{let a=data.leisureActive;if(!a||!a.running)return;a.remainingSeconds=leisureRemaining();a.running=false;save();renderWallet();toast('Cronômetro pausado. Seu tempo está seguro!')};
+window.stopLeisure=()=>{let a=data.leisureActive;if(!a)return;let left=leisureRemaining();if(left>0){data.leisureBankSeconds+=left;addLeisureHistory('credit','Tempo devolvido','Sessão encerrada antes do fim',`+${Math.floor(left/60)} min`)}data.leisureActive=null;save();renderWallet();toast(left?'Tempo restante devolvido ao seu saldo.':'Sessão finalizada!')};
+function tickLeisure(){let a=data.leisureActive;if(!a||!a.running)return;let left=leisureRemaining();$('leisureClock').textContent=fmt(left);if(left<=0){let used=(a.remainingSeconds||0);data.leisureUsedSeconds+=used;data.leisureSessions++;addLeisureHistory('done','Sessão concluída: '+a.name,'Você aproveitou seu tempo',Math.floor(used/60)+' min');data.leisureActive=null;save();renderWallet();toast('Tempo de lazer concluído! Bom descanso.')}}
+setInterval(tickLeisure,500);
+function renderStats(){ $("totalTasks").textContent=data.completed;$("totalPages").textContent=data.pages;$("earned").textContent=data.earned;$("leisure").textContent=(data.redeemed/60).toFixed(1)+"h";let vals=Array.from({length:7},(_,i)=>{let d=dateAgo(6-i);return data.days[d]||0}),max=Math.max(1,...vals);$("chart").innerHTML=vals.map((v,i)=>`<div class="daybar"><i style="height:${Math.max(3,v/max*100)}%"></i><small>${["D","S","T","Q","Q","S","S"][new Date(dateAgo(6-i)+"T12:00:00").getDay()]}</small></div>`).join("");renderHistory("fullHistory")}
+function render(){let l=level(),xp=data.xp%100;$("topCoins").textContent=data.coins+" moedas";$("topStreak").textContent=data.streak+" dias";$("coins").textContent=data.coins;$("shopCoins").textContent=data.coins;$("xp").textContent=data.xp;$("streak").textContent=data.streak+" dias";$("pages").textContent=data.pages;$("level").textContent=String(l).padStart(2,"0");$("rank").textContent=rank();$("xpBar").style.width=xp+"%";$("xpText").textContent=xp+" / 100 XP";renderTasks();renderShop();renderWallet();renderBadges();renderStats();let c=challenge();$("homeChallenge").innerHTML=`<div class="challenge"><strong>✨ ${c.name}</strong><p>${c.desc}</p><div class="bar"><i style="width:${Math.min(100,c.progress/c.goal*100)}%"></i></div><div class="bar-meta"><span>${Math.min(c.progress,c.goal)} / ${c.goal}</span><span>${c.progress>=c.goal?"Concluído!":"Em andamento"}</span></div></div>`;renderHistory("homeHistory",4);save()}
+window.completeTask=id=>{playSuccess();let t=data.tasks.find(x=>x.id===id);if(!t)return;data.coins+=t.coins;data.earned+=t.coins;let xp=Math.round(t.coins/2);data.xp+=xp;data.completed++;data.days[today()]=(data.days[today()]||0)+1;if(t.unit==="páginas")data.pages+=t.goal;updateStreak();addHistory("Missão concluída: "+t.name,"+"+t.coins+" moedas · +"+xp+" XP");render();toast("Missão concluída! +"+t.coins+" moedas e +"+xp+" XP");};
+$("missionSort").onchange=()=>renderTasks();
+$("addTask").onclick=()=>{let name=$("taskName").value.trim(),goal=Number($("taskGoal").value),coins=Number($("taskCoins").value),unit=$("taskUnit").value;if(!name||goal<1||coins<1)return toast("Preencha os campos corretamente.");data.tasks.push({id:Date.now(),name,goal,unit,coins,icon:"⭐"});$("taskName").value="";render();toast("Missão criada!")};
+window.editTask=id=>{let t=data.tasks.find(x=>x.id===id);openModal("Editar missão",`<div class="formline"><label class="fieldlabel">Nome</label><input class="field" id="mName" value="${esc(t.name)}"></div><div class="formline"><label class="fieldlabel">Quantidade</label><input class="field" id="mGoal" type="number" min="1" value="${t.goal}"></div><div class="formline"><label class="fieldlabel">Moedas</label><input class="field" id="mCoins" type="number" min="1" value="${t.coins}"></div>`,()=>{t.name=$("mName").value.trim()||t.name;t.goal=Math.max(1,Number($("mGoal").value));t.coins=Math.max(1,Number($("mCoins").value));render()})};
+$("addShop").onclick=()=>{let name=$("shopName").value.trim(),price=Number($("shopPrice").value),duration=Number($("shopDuration").value),icon=$("shopIcon").value;if(!name||price<1||duration<1)return toast("Preencha os campos corretamente.");data.shop.push({id:Date.now(),name,price,duration,icon});$("shopName").value="";render();toast("Recompensa adicionada!")};
+window.buy=id=>{let s=data.shop.find(x=>x.id===id);if(!s||data.coins<s.price)return toast("Moedas insuficientes.");if(!confirm(`Trocar ${s.price} moedas por ${s.duration} min (${durationLabel(s.duration)}) de ${s.name}? O tempo ficará guardado em Meu tempo.`))return;data.coins-=s.price;data.redeemed+=s.duration;data.leisureBankSeconds+=s.duration*60;data.leisureBoughtSeconds+=s.duration*60;addLeisureHistory("credit",s.name,`Resgatado na loja · ${durationLabel(s.duration)}`,`+${s.duration} min`);addHistory("Recompensa resgatada: "+s.name,s.duration+" min · adicionados à carteira de tempo");render();go("wallet");toast("Tempo adicionado à sua carteira!")};
+window.editShop=id=>{let s=data.shop.find(x=>x.id===id);openModal("Editar recompensa",`<div class="formline"><label class="fieldlabel">Nome</label><input class="field" id="mName" value="${esc(s.name)}"></div><div class="formline"><label class="fieldlabel">Preço em moedas</label><input class="field" id="mPrice" type="number" min="1" value="${s.price}"></div><div class="formline"><label class="fieldlabel">Duração (em minutos)</label><input class="field" id="mDuration" type="number" min="1" value="${s.duration}"></div>`,()=>{s.name=$("mName").value.trim()||s.name;s.price=Math.max(1,Number($("mPrice").value));s.duration=Math.max(1,Number($("mDuration").value));render()})};
+window.removeShop=id=>{if(confirm("Remover esta recompensa da loja?")){data.shop=data.shop.filter(x=>x.id!==id);render()}};
+function openModal(title,body,action){$("modalTitle").textContent=title;$("modalBody").innerHTML=body;modalAction=action;$("modal").classList.add("show")}
+window.closeModal=()=>$("modal").classList.remove("show");$("modalSave").onclick=()=>{if(modalAction)modalAction();closeModal();toast("Alterações salvas!")};
+function go(p){document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("active",b.dataset.page===p));document.querySelectorAll(".page").forEach(s=>s.classList.toggle("active",s.id==="page-"+p));window.scrollTo({top:0,behavior:"smooth"})}
+$("nav").onclick=e=>{let b=e.target.closest("button[data-page]");if(b)go(b.dataset.page)};
+$("clearHistory").onclick=()=>{if(confirm("Apagar todo o histórico de atividades?")){data.history=[];render()}};
+$("resetXP").onclick=()=>{if(confirm("Tem certeza que deseja zerar seu XP e voltar ao nível 1? Suas moedas, missões, conquistas e estatísticas serão mantidas.")){data.xp=0;addHistory("XP resetado","Nível reiniciado para 1");render();toast("XP resetado! Você voltou ao nível 1.")}};
+$("resetAll").onclick=()=>{
+  if(confirm("ATENÇÃO: isso vai apagar TODO o seu progresso, moedas, XP, missões personalizadas, loja, conquistas, histórico e estatísticas. O site voltará ao estado inicial. Essa ação não pode ser desfeita. Deseja continuar?")){
+    if(confirm("Tem certeza mesmo? Todo o seu progresso será perdido.")){
+      data={coins:0,xp:0,tasks:baseTasks.map(t=>({...t})),shop:baseShop.map(s=>({...s})),history:[],completed:0,pages:0,earned:0,redeemed:0,days:{},streak:0,lastDay:null,unlocked:[],focusSeconds:1500,focusEnd:null,focusLabel:"Sessão de estudos",activeReward:null,cart:[],leisureBankSeconds:0,leisureBoughtSeconds:0,leisureUsedSeconds:0,leisureSessions:0,leisureActive:null,leisureHistory:[]};
+      localStorage.setItem("levelUpData",JSON.stringify(data));
+      focusRemaining=1500;focusPaused=true;
+      if(focusInt){clearInterval(focusInt);focusInt=null}
+      render();renderFocus();toast("Tudo foi resetado. Sua jornada recomeça agora!");
+    }
+  }
+};
+let focusRemaining=data.focusEnd?Math.max(0,Math.ceil((data.focusEnd-Date.now())/1000)):data.focusSeconds;
+function durationLabel(minutes){const m=Math.max(0,Number(minutes)||0);if(m<60)return `${m} min`;const h=Math.floor(m/60),r=m%60;const hours=`${h} ${h===1?"hora":"horas"}`;return r?`${hours} e ${r} min`:hours}
+function fmt(s){return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0")}
+function renderFocus(){ $("focusClock").textContent=fmt(focusRemaining);$("focusStatus").textContent=data.focusEnd?"Sessão em andamento. Mantenha o foco!":"Ao terminar, registre a atividade como uma missão concluída para receber sua recompensa."}
+function tickFocus(){if(data.focusEnd){focusRemaining=Math.max(0,Math.ceil((data.focusEnd-Date.now())/1000));$("focusClock").textContent=fmt(focusRemaining);if(focusRemaining<=0){clearInterval(focusInt);data.focusEnd=null;data.focusSeconds=0;save();$("focusStatus").textContent="Sessão finalizada! Registre sua missão para receber moedas e XP.";toast("Parabéns! Seu tempo de foco terminou.")}}}
+$("focusMinutes").onchange=()=>{if(!data.focusEnd){focusRemaining=Math.max(1,Math.min(240,Number($("focusMinutes").value)||25))*60;data.focusSeconds=focusRemaining;renderFocus()}};
+$("focusStart").onclick=()=>{if(data.focusEnd)return toast("A sessão já está em andamento.");let mins=Math.max(1,Math.min(240,Number($("focusMinutes").value)||25));focusRemaining=mins*60;data.focusEnd=Date.now()+focusRemaining*1000;data.focusLabel=$("focusLabel").value;save();clearInterval(focusInt);focusInt=setInterval(tickFocus,500);$("focusStatus").textContent="Foco ativo: "+data.focusLabel;toast("Modo foco iniciado!")};
+$("focusPause").onclick=()=>{if(!data.focusEnd)return;focusRemaining=Math.max(0,Math.ceil((data.focusEnd-Date.now())/1000));data.focusEnd=null;data.focusSeconds=focusRemaining;clearInterval(focusInt);save();renderFocus();$("focusStatus").textContent="Sessão pausada. Você pode continuar quando quiser."};
+$("focusReset").onclick=()=>{data.focusEnd=null;focusRemaining=Math.max(1,Number($("focusMinutes").value)||25)*60;data.focusSeconds=focusRemaining;clearInterval(focusInt);save();renderFocus()};
+function showRewardTimer(){}
+if(data.focusEnd){focusInt=setInterval(tickFocus,500)}renderFocus();render();
+document.getElementById("enterSite").addEventListener("click",()=>{const landing=document.getElementById("landing");landing.classList.add("leaving");setTimeout(()=>{landing.classList.add("hidden");document.body.classList.remove("landing-open")},260);setTimeout(()=>landing.remove(),900)});
+
+// Áudio gerado no próprio navegador: efeitos discretos e uma trilha ambiente suave.
+let audioCtx=null,soundEnabled=localStorage.getItem('levelUpSound')!=='off',musicEnabled=false,musicNodes=[],musicTimer=null,soundVolume=Number(localStorage.getItem('levelUpSoundVolume')||85)/100,musicVolume=Number(localStorage.getItem('levelUpMusicVolume')||75)/100;
+function audioReady(){if(!audioCtx){const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return null;audioCtx=new AC()}if(audioCtx.state==='suspended')audioCtx.resume();return audioCtx}
+function tone(freq=620,duration=.075,volume=.035,type='sine',delay=0){const ctx=audioReady();if(!ctx||!soundEnabled)return;volume*=soundVolume*1.8;const osc=ctx.createOscillator(),gain=ctx.createGain();osc.type=type;osc.frequency.setValueAtTime(freq,ctx.currentTime+delay);gain.gain.setValueAtTime(.0001,ctx.currentTime+delay);gain.gain.exponentialRampToValueAtTime(volume,ctx.currentTime+delay+.012);gain.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+delay+duration);osc.connect(gain);gain.connect(ctx.destination);osc.start(ctx.currentTime+delay);osc.stop(ctx.currentTime+delay+duration+.02)}
+function playClick(){tone(540,.055,.018,'sine');tone(790,.045,.009,'sine',.025)}
+function playSuccess(){tone(523,.16,.035,'sine');tone(659,.18,.03,'sine',.10);tone(784,.28,.028,'sine',.21)}
+function stopMusic(){musicEnabled=false;if(musicTimer){clearInterval(musicTimer);musicTimer=null}if(audioCtx){musicNodes.forEach(n=>{try{n.gain.gain.cancelScheduledValues(audioCtx.currentTime);n.gain.gain.setTargetAtTime(.0001,audioCtx.currentTime,.35);n.osc.stop(audioCtx.currentTime+1.5)}catch(e){}})}musicNodes=[];const b=$('musicToggle');if(b){b.classList.remove('on');b.textContent='♫ Música: OFF';b.setAttribute('aria-pressed','false')};if($('audioState'))$('audioState').textContent='Áudio opcional'}
+function startMusic(){const ctx=audioReady();if(!ctx)return;stopMusic();musicEnabled=true;const chords=[[261.63,329.63,392],[220,261.63,329.63],[174.61,220,261.63],[196,246.94,293.66]];let index=0;function chord(){if(!musicEnabled)return;const notes=chords[index++%chords.length];notes.forEach((f,i)=>{const osc=ctx.createOscillator(),gain=ctx.createGain(),filter=ctx.createBiquadFilter();osc.type='sine';osc.frequency.value=f;filter.type='lowpass';filter.frequency.value=850;gain.gain.setValueAtTime(.0001,ctx.currentTime);gain.gain.linearRampToValueAtTime((.025*musicVolume)/(i===0?1:1.35),ctx.currentTime+2.5);gain.gain.setTargetAtTime(.0001,ctx.currentTime+7,.8);osc.connect(filter);filter.connect(gain);gain.connect(ctx.destination);osc.start();osc.stop(ctx.currentTime+10);musicNodes.push({osc,gain})});musicNodes=musicNodes.filter(n=>{try{return n.osc.stop!==null}catch(e){return false}})}chord();musicTimer=setInterval(chord,8000);$('musicToggle').classList.add('on');$('musicToggle').textContent='♫ Música: ON';$('musicToggle').setAttribute('aria-pressed','true');$('audioState').textContent='Trilha ambiente suave'}
+$('soundVolume').value=Math.round(soundVolume*100);$('musicVolume').value=Math.round(musicVolume*100);
+$('soundVolume').addEventListener('input',e=>{soundVolume=Number(e.target.value)/100;localStorage.setItem('levelUpSoundVolume',e.target.value);if(soundEnabled)playClick()});
+$('musicVolume').addEventListener('input',e=>{musicVolume=Number(e.target.value)/100;localStorage.setItem('levelUpMusicVolume',e.target.value);if(musicEnabled){stopMusic();startMusic()}});
+$('soundToggle').textContent=soundEnabled?'🔊 Sons: ON':'🔇 Sons: OFF';$('soundToggle').classList.toggle('on',soundEnabled);$('soundToggle').setAttribute('aria-pressed',String(soundEnabled));
+$('soundToggle').addEventListener('click',()=>{soundEnabled=!soundEnabled;localStorage.setItem('levelUpSound',soundEnabled?'on':'off');$('soundToggle').textContent=soundEnabled?'🔊 Sons: ON':'🔇 Sons: OFF';$('soundToggle').classList.toggle('on',soundEnabled);$('soundToggle').setAttribute('aria-pressed',String(soundEnabled));if(soundEnabled)playClick()});
+$('musicToggle').addEventListener('click',()=>{if(musicEnabled)stopMusic();else startMusic()});
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.disabled||b.id==='soundToggle'||b.id==='musicToggle')return;if(b.id==='enterSite'){playSuccess();return}if(b.classList.contains('btn')||b.classList.contains('nav')||b.closest('.nav')||b.classList.contains('enter-btn'))playClick()},{capture:true});
+
+
+// Fundo vivo com partículas lentas: discreto, leve e sem bibliotecas externas.
+(()=>{
+ const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+ const canvas=document.createElement('canvas');canvas.id='lifeCanvas';canvas.setAttribute('aria-hidden','true');document.body.prepend(canvas);
+ const ctx=canvas.getContext('2d');if(!ctx)return;
+ let w=0,h=0,dpr=Math.min(window.devicePixelRatio||1,1.5),particles=[],raf=0;
+ const make=()=>({x:Math.random()*w,y:Math.random()*h,r:.6+Math.random()*1.8,vx:(Math.random()-.5)*.16,vy:-.08-Math.random()*.18,a:.12+Math.random()*.32,phase:Math.random()*6.28});
+ function resize(){w=innerWidth;h=innerHeight;canvas.width=w*dpr;canvas.height=h*dpr;canvas.style.width=w+'px';canvas.style.height=h+'px';ctx.setTransform(dpr,0,0,dpr,0,0);particles=Array.from({length:Math.min(58,Math.max(22,Math.floor(w*h/24000)))},make)}
+ function draw(){ctx.clearRect(0,0,w,h);for(const p of particles){if(!reduce){p.x+=p.vx;p.y+=p.vy;p.phase+=.012;if(p.y<-8){p.y=h+8;p.x=Math.random()*w}if(p.x<-8)p.x=w+8;if(p.x>w+8)p.x=-8}
+ const alpha=p.a*(.65+.35*Math.sin(p.phase));ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=`rgba(224,205,244,${alpha})`;ctx.shadowBlur=9;ctx.shadowColor='rgba(213,190,239,.45)';ctx.fill()}
+ ctx.shadowBlur=0;if(!reduce)raf=requestAnimationFrame(draw)}
+ resize();draw();addEventListener('resize',()=>{cancelAnimationFrame(raf);resize();draw()},{passive:true});
+})();
+// Ondas visuais nos controles e pequenos brilhos ao clicar.
+document.addEventListener('click',e=>{
+ const b=e.target.closest('button');if(!b||b.disabled)return;
+ const r=b.getBoundingClientRect(),size=Math.max(r.width,r.height)*.8;
+ const dot=document.createElement('span');dot.className='ripple';dot.style.width=dot.style.height=size+'px';
+ dot.style.left=(e.clientX-r.left-size/2)+'px';dot.style.top=(e.clientY-r.top-size/2)+'px';
+ b.appendChild(dot);setTimeout(()=>dot.remove(),650);
+},{capture:false});
+
+
+// ===== FIREBASE AUTH + PERFIL + SINCRONIZAÇÃO NA NUVEM =====
+// Crie um projeto em https://console.firebase.google.com e substitua os valores abaixo.
+// Ative Authentication > Google e E-mail/senha; crie o Firestore e habilite o Storage para fotos.
+const FIREBASE_CONFIG={
+ apiKey:"COLE_AQUI_SUA_API_KEY",
+ authDomain:"SEU-PROJETO.firebaseapp.com",
+ projectId:"SEU-PROJETO",
+ storageBucket:"SEU-PROJETO.firebasestorage.app",
+ messagingSenderId:"COLE_SEU_SENDER_ID",
+ appId:"COLE_SEU_APP_ID"
+};
+let fb={app:null,auth:null,db:null,storage:null,user:null,configured:false,mode:'local',signup:false};
+const fbConfigured=()=>FIREBASE_CONFIG.apiKey.startsWith('AIza')&&FIREBASE_CONFIG.projectId!=='SEU-PROJETO'&&FIREBASE_CONFIG.appId.startsWith('1:');
+function authMessage(t){$('authMessage').textContent=t}
+function profileUI(user){const avatar=user?.photoURL||'';['profileAvatar','profileModalAvatar'].forEach(id=>{const im=$(id);im.src=avatar;im.style.visibility=avatar?'visible':'hidden'});$('profileLabel').textContent=user?.displayName||user?.email?.split('@')[0]||'Visitante';$('profileName').textContent=user?.displayName||user?.email?.split('@')[0]||'Visitante';$('profileEmail').textContent=user?.email||'Modo local';$('profileSyncInfo').textContent=user?'Conta conectada. Seu progresso é sincronizado na nuvem.':'Modo local: dados ficam apenas neste navegador.'}
+async function initFirebase(){if(!fbConfigured()){$('firebaseSetupNote').style.display='block';$('googleLogin').disabled=true;$('emailSubmit').disabled=true;$('forgotPassword').disabled=true;$('googleLogin').style.opacity=$('emailSubmit').style.opacity='.45';return}
+ try{const [appM,authM,storeM,storageM]=await Promise.all([import('https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js'),import('https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js'),import('https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js'),import('https://www.gstatic.com/firebasejs/10.14.1/firebase-storage.js')]);
+ fb.app=appM.initializeApp(FIREBASE_CONFIG);fb.auth=authM.getAuth(fb.app);fb.db=storeM.getFirestore(fb.app);fb.storage=storageM.getStorage(fb.app);Object.assign(fb,{...authM,...storeM,...storageM});fb.configured=true;$('firebaseSetupNote').style.display='none';
+ authM.onAuthStateChanged(fb.auth,async user=>{fb.user=user;if(user){fb.mode='cloud';try{const ref=storeM.doc(fb.db,'users',user.uid),snap=await storeM.getDoc(ref);if(snap.exists()){const cloud=snap.data().levelUpData;if(cloud&&typeof cloud==='object'){data=cloud;localStorage.setItem('levelUpData',JSON.stringify(data));render();if(data.focusEnd){clearInterval(focusInt);focusInt=setInterval(tickFocus,500)}}}else await storeM.setDoc(ref,{levelUpData:data,updatedAt:storeM.serverTimestamp()},{merge:true});}catch(err){console.error(err);authMessage('Conta conectada, mas não foi possível carregar a nuvem. Confira as regras do Firestore.')}profileUI(user);$('authGate').classList.remove('show');$('profileButton').style.display='flex';}else{fb.mode='local';profileUI(null);$('profileButton').style.display='flex'}});
+ }catch(err){console.error(err);authMessage('Não foi possível iniciar o Firebase. Confira as credenciais e a conexão.')}
+}
+window.levelUpCloudSave=(snapshot)=>{if(!fb.configured||!fb.user||fb.mode!=='cloud')return;clearTimeout(window._cloudSaveTimer);const safe=JSON.parse(JSON.stringify(snapshot));window._cloudSaveTimer=setTimeout(async()=>{try{await fb.setDoc(fb.doc(fb.db,'users',fb.user.uid),{levelUpData:safe,updatedAt:fb.serverTimestamp()},{merge:true})}catch(e){console.error(e);toast('Falha ao sincronizar. Confira sua conexão.')}},650)};
+$('enterSite').addEventListener('click',()=>{if(fb.user)return;setTimeout(()=>{$('authGate').classList.add('show')},280)});
+$('offlineMode').addEventListener('click',()=>{$('authGate').classList.remove('show');fb.mode='local';profileUI(null)});
+$('loginTab').onclick=()=>{fb.signup=false;$('loginTab').classList.add('active');$('signupTab').classList.remove('active');$('authTitle').textContent='Entre no seu LEVEL UP';$('emailSubmit').textContent='Entrar na conta';$('authPassword').autocomplete='current-password';authMessage('')};
+$('signupTab').onclick=()=>{fb.signup=true;$('signupTab').classList.add('active');$('loginTab').classList.remove('active');$('authTitle').textContent='Crie sua conta';$('emailSubmit').textContent='Criar minha conta';$('authPassword').autocomplete='new-password';authMessage('')};
+$('emailSubmit').onclick=async()=>{if(!fb.configured)return authMessage('Configure o Firebase no bloco FIREBASE_CONFIG para ativar o login real.');const email=$('authEmail').value.trim(),pass=$('authPassword').value;if(!email||!pass)return authMessage('Preencha seu e-mail e sua senha.');try{if(fb.signup)await fb.createUserWithEmailAndPassword(fb.auth,email,pass);else await fb.signInWithEmailAndPassword(fb.auth,email,pass);authMessage('Acesso realizado!')}catch(e){authMessage(({ 'auth/invalid-email':'E-mail inválido.','auth/user-not-found':'Conta não encontrada.','auth/wrong-password':'Senha incorreta.','auth/email-already-in-use':'Este e-mail já possui uma conta.','auth/weak-password':'Use uma senha com pelo menos 6 caracteres.','auth/invalid-credential':'E-mail ou senha incorretos.','auth/operation-not-allowed':'Ative o login por e-mail/senha no Firebase.'})[e.code]||'Não foi possível entrar: '+e.message)}};
+$('googleLogin').onclick=async()=>{if(!fb.configured)return authMessage('Configure o Firebase para ativar o login com Google.');try{await fb.signInWithPopup(fb.auth,new fb.GoogleAuthProvider())}catch(e){authMessage('Login Google não concluído: '+e.message)}};
+$('forgotPassword').onclick=async()=>{if(!fb.configured)return authMessage('Configure o Firebase primeiro.');const email=$('authEmail').value.trim();if(!email)return authMessage('Digite seu e-mail para receber a recuperação.');try{await fb.sendPasswordResetEmail(fb.auth,email);authMessage('Enviamos um link de recuperação para seu e-mail.')}catch(e){authMessage('Não foi possível enviar: '+e.message)}};
+$('profileButton').onclick=()=>{$('profileModal').classList.add('show');profileUI(fb.user);$('profileConnect').style.display=fb.user?'none':'block';$('profileSignout').style.display=fb.user?'block':'none';$('profilePhoto').disabled=!fb.user};$('profileConnect').onclick=()=>{$('profileModal').classList.remove('show');$('authGate').classList.add('show')};$('profileClose').onclick=()=>$('profileModal').classList.remove('show');$('profileModal').addEventListener('click',e=>{if(e.target===$('profileModal'))$('profileModal').classList.remove('show')});
+$('profileSignout').onclick=async()=>{if(fb.user&&fb.auth)await fb.signOut(fb.auth);$('profileModal').classList.remove('show');$('authGate').classList.add('show');authMessage('Você saiu da sua conta.')};
+$('profilePhoto').addEventListener('change',async e=>{const file=e.target.files?.[0];if(!file)return;if(!file.type.startsWith('image/'))return toast('Escolha um arquivo de imagem.');if(file.size>5*1024*1024)return toast('A foto precisa ter menos de 5 MB.');if(!fb.user||!fb.storage)return toast('Entre em uma conta Firebase para salvar sua foto.');try{const path=fb.ref(fb.storage,'profilePhotos/'+fb.user.uid+'/'+Date.now()+'.jpg'),snap=await fb.uploadBytes(path,file),url=await fb.getDownloadURL(snap.ref);await fb.updateProfile(fb.user,{photoURL:url});await fb.user.reload();fb.user=fb.auth.currentUser;profileUI(fb.user);toast('Foto de perfil atualizada!')}catch(err){console.error(err);toast('Não foi possível enviar a foto. Confira o Storage.') }e.target.value=''});
+profileUI(null);$('profileButton').style.display='flex';initFirebase();
+
+</script></body></html>
